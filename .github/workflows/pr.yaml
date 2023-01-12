@@ -39,6 +39,7 @@ jobs:
     - name: Install additional Helm repos
       run: |
         helm repo add bitnami https://charts.bitnami.com/bitnami
+        helm repo add digicatapult https://digicatapult.github.io/helm-charts
 
     - name: Run chart-testing (list-changed)
       id: list-changed
@@ -51,9 +52,7 @@ jobs:
     - name: Run chart-testing (lint)
       run: |
         ct lint \
-          --target-branch ${{ github.event.repository.default_branch }} \
-          --lint-conf chart-testing/lintconf.yaml \
-          --excluded-charts charts/common
+          --target-branch ${{ github.event.repository.default_branch }}
       if: steps.list-changed.outputs.changed == 'true'
 
     - name: Create kind cluster

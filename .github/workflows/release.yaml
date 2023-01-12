@@ -27,6 +27,7 @@ jobs:
       - name: Install additional Helm repos
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add digicatapult https://digicatapult.github.io/helm-charts
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1
