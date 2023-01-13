@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  helm-testing:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

@@ -1,6 +1,6 @@
 image:
   repository: digicatapult/dscp-node
-  tag: latest
+  tag: v4.5.1
   pullPolicy: Always
 
 initContainer:

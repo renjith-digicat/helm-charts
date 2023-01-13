@@ -1,0 +1,51 @@
+config:
+  port: 80
+  # externalOrigin: "http://localhost:3000" # Overrides the server url in the openapi spec
+  # externalPathPrefix: "alice/inteli-api" # Path prefix to be applied to served API routes
+  dscpApiHost: dscp-api
+  dscpApiPort: 80
+  logLevel: info
+  dbName: inteli
+  dbPort: 5432
+  identityServiceHost: localhost
+  identityServicePort: 80
+  auth:
+    type: NONE
+    jwksUri: https://inteli.eu.auth0.com/.well-known/jwks.json
+    audience: inteli-dev
+    issuer: https://inteli.eu.auth0.com/
+    tokenUrl: https://inteli.eu.auth0.com/oauth/token
+
+deployment:
+  annotations: {}
+  livenessProbe:
+    enabled: true
+  replicaCount: 1
+
+ingress:
+  annotations: {}
+  # className: ""
+  enabled: true
+  paths:
+    - /v1/attachment
+    - /v1/build
+    - /v1/order
+    - /v1/part
+    - /v1/recipe
+
+service:
+  annotations: {}
+  enabled: true
+  port: 80
+
+image:
+  repository: digicatapult/inteli-api
+  pullPolicy: IfNotPresent
+  tag: 'v1.29.1'
+
+postgresql:
+  enabled: true
+  auth:
+    database: inteli
+    username: inteli_api
+    password: postgres
