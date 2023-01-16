@@ -9,6 +9,7 @@ config:
   # privateKey:
   logLevel: info
   ipfsApiPort: 5001
+  ipfsApiHost: localhost
   ipfsSwarmPort: 4001
   ipfsDataPath: '/ipfs'
   ipfsCommand: '/usr/local/bin/ipfs'

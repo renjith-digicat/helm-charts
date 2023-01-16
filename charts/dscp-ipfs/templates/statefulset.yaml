@@ -103,6 +103,11 @@ spec:
                 configMapKeyRef:
                   name: {{ include "dscp-ipfs.fullname" . }}-config
                   key: ipfsApiPort
+            - name: IPFS_API_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "dscp-ipfs.fullname" . }}-config
+                  key: ipfsApiHost
             - name: LOG_LEVEL
               valueFrom:
                 configMapKeyRef:

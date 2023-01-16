@@ -21,6 +21,7 @@ data:
   {{- if .Values.config.ipfsBootNodeAddress }}
   ipfsBootNodeAddress: {{ .Values.config.ipfsBootNodeAddress }}
   {{- end }}
+  ipfsApiHost: {{ .Values.config.ipfsApiHost }}
   ipfsApiPort: {{ include "dscp-ipfs.ipfsApiPort" . }}
   ipfsSwarmPort: {{ .Values.config.ipfsSwarmPort | quote }}
   dataVolumeSize: {{ .Values.storage.dataVolumeSize | quote }}
