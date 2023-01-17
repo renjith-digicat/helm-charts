@@ -9,3 +9,4 @@ A collection of [helm](https://helm.sh) charts created by [Digital Catapult](htt
 * [dscp-identity-service](charts/dscp-identity-service/Chart.yaml) - Deploy dscp-identity-service
 * [inteli-api](charts/inteli-api/Chart.yaml) - Deploy inteli-api
 * [dscp-api](charts/dscp-api/Chart.yaml) - Deploy dscp-api
+* [wasp-routing-service](charts/wasp-routing-service/Chart.yaml) - Deploy wasp-routing-service
