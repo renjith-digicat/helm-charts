@@ -1,0 +1,22 @@
+postgresql:
+  enabled: true
+  auth:
+    database: authentication
+    username: authentication
+    password: postgres
+config:
+  port: 80
+  jwtSecret: ogA9ppB$S!dy!hu3Rauvg!L96
+  logLevel: info
+  dbName: authentication
+  dbPort: 5432
+  externalPostgresql: null
+image:
+  repository: digicatapult/wasp-authentication-service
+  pullPolicy: IfNotPresent
+  tag: 'v0.1.0'
+ingress:
+  paths:
+    - /v1/auth
+  authenticatedPaths:
+    - /v1/user/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/token
