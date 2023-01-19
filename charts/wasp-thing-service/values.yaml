@@ -1,0 +1,21 @@
+postgresql:
+  enabled: true
+  auth:
+    database: things
+    username: things
+    password: postgres
+config:
+  waspThingServicePort: 3001
+  jwtSecret: test
+  dbName: things
+  dbPort: 5432
+  externalPostgresql: null
+image:
+  repository: digicatapult/wasp-thing-service
+  pullPolicy: IfNotPresent
+  tag: 'v0.1.0'
+ingress:
+  paths:
+    - /v1/ingest
+    - /v1/thing
+    - /v1/thingType
