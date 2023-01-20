@@ -1,0 +1,5 @@
+config:
+  init:
+    adminPassword:
+      enabled: true
+      password: wibble
