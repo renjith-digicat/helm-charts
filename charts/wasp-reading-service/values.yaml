@@ -1,0 +1,31 @@
+postgresql:
+  enabled: true
+  auth:
+    database: readings
+    username: readings
+    password: postgres
+kafka:
+  enabled: false
+replicaCount: 1
+config:
+  port: 80
+  logLevel: info
+  apiReadingsLimit: 10000
+  dbName: readings
+  dbPort: 5432
+  kafkaLogLevel: 'info'
+  kafkaBrokers: 'kafka:9092'
+  externalPostgresql: null
+  kafkaReadingsTopic: readings
+  kafkaReadingsNotificationsTopic: reading-notifications
+  readingsReplicationFactor: 1
+  readingsPartitions: 5
+image:
+  repository: digicatapult/wasp-reading-service
+  pullPolicy: IfNotPresent
+  tag: 'v0.1.0'
+kafkaInit:
+  repository: bitnami/kafka
+  tag: '3.3-debian-11'
+ingress:
+  path: /v1/thing/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/dataset

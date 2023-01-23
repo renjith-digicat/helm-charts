@@ -12,3 +12,5 @@ A collection of [helm](https://helm.sh) charts created by [Digital Catapult](htt
 * [wasp-routing-service](charts/wasp-routing-service/Chart.yaml) - Deploy wasp-routing-service
 * [wasp-authentication-service](charts/wasp-authentication-service/Chart.yaml) - Deploy wasp-authentication-service
 * [wasp-thing-service](charts/wasp-thing-service/Chart.yaml) - Deploy wasp-thing-service
+* [wasp-user-service](charts/wasp-user-service/Chart.yaml) - Deploy wasp-user-service
+* [wasp-reading-service](charts/wasp-reading-service/Chart.yaml) - Deploy wasp-reading-service
