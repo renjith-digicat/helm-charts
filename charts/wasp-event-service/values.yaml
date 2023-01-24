@@ -1,0 +1,31 @@
+postgresql:
+  enabled: true
+  auth:
+    database: events
+    username: events
+    password: postgres
+kafka:
+  enabled: false
+replicaCount: 1
+config:
+  port: 80
+  logLevel: info
+  dbName: events
+  dbPort: 5432
+  eventsApiOffsetLimit: 10000
+  kafkaLogLevel: 'info'
+  kafkaBrokers: 'kafka:9092'
+  externalPostgresql: null
+  kafkaEventsTopic: events
+  kafkaEventsNotificationsTopic: event-notifications
+  eventsReplicationFactor: 1
+  eventsPartitions: 5
+image:
+  repository: digicatapult/wasp-event-service
+  pullPolicy: IfNotPresent
+  tag: 'v0.1.0'
+kafkaInit:
+  repository: bitnami/kafka
+  tag: '3.3-debian-11'
+ingress:
+  path: /v1/thing/[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/event
