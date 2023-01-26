@@ -1,0 +1,25 @@
+config:
+  port: 80
+  servicePort: 80
+  logLevel: info
+  enabled: true
+  apiDocsFilePath: ./api-docs.json
+  paths:
+    - http://wasp-reading-service.wasp.svc.cluster.local/v1/api-docs
+    - http://wasp-event-service.wasp.svc.cluster.local/v1/api-docs
+    - http://wasp-thing-service.wasp.svc.cluster.local/v1/api-docs
+    - http://wasp-authentication-service.wasp.svc.cluster.local/v1/api-docs
+    - http://wasp-user-service.wasp.svc.cluster.local/v1/api-docs
+  output: output/output.swagger.json
+  baseUrl: http://localhost:3000/api
+apidocsmock:
+  enabled: false
+image:
+  repository: digicatapult/wasp-open-api
+  pullPolicy: IfNotPresent
+  tag: 'v0.1.0'
+ingress:
+  annotations: {}
+  paths:
+    - /swagger
+    - /api-docs
