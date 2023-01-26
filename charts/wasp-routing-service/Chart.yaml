@@ -1,16 +1,27 @@
+annotations:
+  category: wasp
+  licenses: Apache-2.0
 apiVersion: v2
-name: wasp-routing-service
-appVersion: '2.1.0'
-description: A Helm chart for WASP-ROUTING_SERVICE
-version: '2.0.6'
-type: application
-maintainers:
-  - name: digicatapult
-    email: opensource@digicatapult.org.uk
-    url: www.digicatapult.org.uk
-
+appVersion: 2.1.2
 dependencies:
-  - name: kafka
-    version: '20.x.x'
+  - condition: kafka.enabled
+    name: kafka
     repository: https://charts.bitnami.com/bitnami
-    condition: kafka.enabled
+    version: 20.x.x
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 2.x.x
+description: The wasp-routing-service is a component of the WASP (Wide-Area-Sensor-Platform), an IoT platform designed to normalise and consolidate data from multiple IoT data services into one place.
+home: https://github.com/digicatapult/wasp-documentation
+icon: https://raw.githubusercontent.com/digicatapult/wasp-documentation/main/assets/icon.png
+keywords:
+  - IoT
+maintainers:
+  - name: digicatapult  # Digital Catapult
+    url: https://github.com/digicatapult/helm-charts
+name: wasp-routing-service
+sources:
+  - https://github.com/digicatapult/wasp-routing-service
+version: 3.0.0
