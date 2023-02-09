@@ -25,4 +25,4 @@ maintainers:
 name: wasp-thing-service
 sources:
   - https://github.com/digicatapult/wasp-thing-service
-version: 1.0.0
+version: 1.0.1

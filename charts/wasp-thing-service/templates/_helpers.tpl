@@ -1,20 +1,3 @@
-
-{{/*
-Return the type of listener
-Usage:
-{{ include "wasp-thing-service.listenerType" ( dict "protocol" .Values.path.to.the.Value ) }}
-*/}}
-{{- define "wasp-thing-service.listenerType" -}}
-{{- if eq .protocol "plaintext" -}}
-PLAINTEXT
-{{- else if or (eq .protocol "tls") (eq .protocol "mtls") -}}
-SSL
-{{- else if eq .protocol "sasl_tls" -}}
-SASL_SSL
-{{- else if eq .protocol "sasl" -}}
-SASL_PLAINTEXT
-{{- end -}}
-{{- end -}}
 {{/*
 Return the proper wasp-thing-service image name
 */}}
