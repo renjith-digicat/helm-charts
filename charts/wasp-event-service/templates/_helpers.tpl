@@ -1,103 +1,295 @@
+
 {{/*
-Create name to be used with deployment.
+Return the proper wasp-event-service image name
 */}}
-{{- define "wasp-event-service.fullname" -}}
-    {{- if .Values.fullnameOverride -}}
-        {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-    {{- else -}}
-      {{- $name := default .Chart.Name .Values.nameOverride -}}
-      {{- if contains $name .Release.Name -}}
-        {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-      {{- else -}}
-        {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-      {{- end -}}
-    {{- end -}}
+{{- define "wasp-event-service.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
 {{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
+Return the proper init container image name
 */}}
-{{- define "wasp-event-service.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- define "wasp-event-service.initDbCreate.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.initDbCreate.image "global" .Values.global) }}
+{{- end -}}
 
 {{/*
-Selector labels
-*/}}
-{{- define "wasp-event-service.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "wasp-event-service.fullname" . }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "wasp-event-service.labels" -}}
-helm.sh/chart: {{ include "wasp-event-service.chart" . }}
-{{ include "wasp-event-service.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Conditionally populate imagePullSecrets if present in the context
+Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "wasp-event-service.imagePullSecrets" -}}
-  {{- if (not (empty .Values.image.pullSecrets)) }}
-imagePullSecrets:
-    {{- range .Values.image.pullSecrets }}
-  - name: {{ . }}
-    {{- end }}
-  {{- end }}
+{{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.initDbCreate.image .Values.initEvents.image ) "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
-Create a default fully qualified postgresql name.
+Create the name of the service account to use
+*/}}
+{{- define "wasp-event-service.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "common.names.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "wasp-event-service.postgresql.fullname" -}}
-{{- if .Values.config.externalPostgresql -}}
-{{ .Values.config.externalPostgresql | trunc 63 | trimSuffix "-" -}}
-{{- else if not ( .Values.postgresql.enabled ) -}}
-{{ fail "Postgresql must either be enabled or passed via config.externalPostgresql" }}
-{{- else if .Values.postgresql.fullnameOverride -}}
-{{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "postgresql" "chartValues" .Values.postgresql "context" $) -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name for Kafka subchart
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "wasp-event-service.kafka.fullname" -}}
+{{- if .Values.kafka.fullnameOverride -}}
+{{- .Values.kafka.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- $name := default "postgresql" .Values.postgresql.nameOverride -}}
+{{- $name := default "kafka" .Values.kafka.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Create a default fully qualified kafka broker name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+Return the type of listener
+Usage:
+{{ include "wasp-event-service.listenerType" ( dict "protocol" .Values.path.to.the.Value ) }}
+*/}}
+{{- define "wasp-event-service.listenerType" -}}
+{{- if eq .protocol "plaintext" -}}
+PLAINTEXT
+{{- else if or (eq .protocol "tls") (eq .protocol "mtls") -}}
+SSL
+{{- else if eq .protocol "sasl_tls" -}}
+SASL_SSL
+{{- else if eq .protocol "sasl" -}}
+SASL_PLAINTEXT
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a comma separated list of kafka brokers to be used as the brokers list
 */}}
 {{- define "wasp-event-service.kafka.brokers" -}}
-{{- if .Values.config.kafkaBrokers -}}
-{{ .Values.config.kafkaBrokers | trunc 63 | trimSuffix "-" -}}
-{{- else if not ( .Values.kafka.enabled ) -}}
-{{ fail "Kafka brokers must either be configured or a kafka instance enabled" }}
-{{- else if .Values.kafka.fullnameOverride -}}
-{{- printf "%s:9092" .Values.kafka.fullnameOverride -}}
+{{- $releaseNamespace := .Release.Namespace -}}
+{{- $clusterDomain := .Values.clusterDomain -}}
+{{- $kafkaReplicaCount := int .Values.kafka.replicaCount -}}
+{{- $kafkaFullname := include "wasp-event-service.kafka.fullname" . -}}
+{{- $kafkaPort := int .Values.kafka.service.ports.client -}}
+{{- if .Values.kafka.enabled -}}
+{{- $brokers := list -}}
+{{- range $e, $i := until $kafkaReplicaCount -}}
+{{- $brokers = append $brokers (printf "%s-%d.%s-headless.%s.svc.%s:%d" $kafkaFullname $i $kafkaFullname $releaseNamespace $clusterDomain $kafkaPort) -}}
+{{- end -}}
+{{- join "," $brokers | quote -}}
 {{- else -}}
-{{- $name := default "kafka" .Values.kafka.nameOverride -}}
-{{- printf "%s-%s:9092" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- join "," .Values.externalKafka.brokers | quote -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "wasp-event-service.initEvents.name" -}}
-{{- if .Values.fullnameOverride -}}
-{{- printf "%s-events" .Values.fullnameOverride | lower | trunc 63 | trimSuffix "-" -}}
+{{/*
+Kafka broker to be used to bootstrap initialisation
+*/}}
+{{- define "wasp-event-service.kafka.bootstrapBroker" -}}
+{{- $releaseNamespace := .Release.Namespace -}}
+{{- $clusterDomain := .Values.clusterDomain -}}
+{{- $kafkaFullname := include "wasp-event-service.kafka.fullname" . -}}
+{{- $kafkaPort := int .Values.kafka.service.ports.client -}}
+{{- if .Values.kafka.enabled -}}
+{{- printf "%s-%d.%s-headless.%s.svc.%s:%d" $kafkaFullname 0 $kafkaFullname $releaseNamespace $clusterDomain $kafkaPort -}}
 {{- else -}}
-{{- printf "%s-%s-events" .Release.Name .Chart.Name | lower | trunc 63 | trimSuffix "-" -}}
+{{- first .Values.externalKafka.brokers -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "wasp-event-service.initDb.name" -}}
-{{- if .Values.fullnameOverride -}}
-{{- printf "%s-db" .Values.fullnameOverride | lower | trunc 63 | trimSuffix "-" -}}
+{{/*
+Return the proper init container image name
+*/}}
+{{- define "wasp-event-service.initEvents.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.initEvents.image "global" .Values.global) }}
+{{- end -}}
+
+
+{{/*
+Return the Postgresql hostname
+*/}}
+{{- define "wasp-event-service.databaseHost" -}}
+{{- ternary (include "wasp-event-service.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Return the Postgresql port
+*/}}
+{{- define "wasp-event-service.databasePort" -}}
+{{- ternary "5432" .Values.externalDatabase.port .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Return the Postgresql database name
+*/}}
+{{- define "wasp-event-service.databaseName" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- if .Values.global.postgresql -}}
+        {{- if .Values.global.postgresql.auth -}}
+            {{- coalesce .Values.global.postgresql.auth.database .Values.postgresql.auth.database -}}
+        {{- else -}}
+            {{- .Values.postgresql.auth.database -}}
+        {{- end -}}
+    {{- else -}}
+        {{- .Values.postgresql.auth.database -}}
+    {{- end -}}
 {{- else -}}
-{{- printf "%s-%s-db" .Release.Name .Chart.Name | lower | trunc 63 | trimSuffix "-" -}}
+    {{- .Values.externalDatabase.database -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Postgresql user
+*/}}
+{{- define "wasp-event-service.databaseUser" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- if .Values.global.postgresql -}}
+        {{- if .Values.global.postgresql.auth -}}
+            {{- coalesce .Values.global.postgresql.auth.username .Values.postgresql.auth.username -}}
+        {{- else -}}
+            {{- .Values.postgresql.auth.username -}}
+        {{- end -}}
+    {{- else -}}
+        {{- .Values.postgresql.auth.username -}}
+    {{- end -}}
+{{- else -}}
+    {{- .Values.externalDatabase.user -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the PostgreSQL Secret Name
+*/}}
+{{- define "wasp-event-service.databaseSecretName" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- if .Values.global.postgresql -}}
+        {{- if .Values.global.postgresql.auth -}}
+            {{- if .Values.global.postgresql.auth.existingSecret -}}
+                {{- tpl .Values.global.postgresql.auth.existingSecret $ -}}
+            {{- else -}}
+                {{- default (include "wasp-event-service.postgresql.fullname" .) (tpl .Values.postgresql.auth.existingSecret $) -}}
+            {{- end -}}
+        {{- else -}}
+            {{- default (include "wasp-event-service.postgresql.fullname" .) (tpl .Values.postgresql.auth.existingSecret $) -}}
+        {{- end -}}
+    {{- else -}}
+        {{- default (include "wasp-event-service.postgresql.fullname" .) (tpl .Values.postgresql.auth.existingSecret $) -}}
+    {{- end -}}
+{{- else -}}
+    {{- default (printf "%s-externaldb" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-") (tpl .Values.externalDatabase.existingSecret $) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "wasp-event-service.databaseSecretPasswordKey" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- print "password" -}}
+{{- else -}}
+    {{- if .Values.externalDatabase.existingSecret -}}
+        {{- if .Values.externalDatabase.existingSecretPasswordKey -}}
+            {{- printf "%s" .Values.externalDatabase.existingSecretPasswordKey -}}
+        {{- else -}}
+            {{- print "password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- print "password" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "wasp-event-service.databaseSecretPostgresPasswordKey" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- print "postgres-password" -}}
+{{- else -}}
+    {{- if .Values.externalDatabase.existingSecret -}}
+        {{- if .Values.externalDatabase.existingSecretPostgresPasswordKey -}}
+            {{- printf "%s" .Values.externalDatabase.existingSecretPostgresPasswordKey -}}
+        {{- else -}}
+            {{- print "postgres-password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- print "postgres-password" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Compile all warnings into a single message, and call fail.
+*/}}
+{{- define "wasp-event-service.validateValues" -}}
+{{- $messages := list -}}
+{{- $messages := append $messages (include "wasp-event-service.validateValues.databaseName" .) -}}
+{{- $messages := append $messages (include "wasp-event-service.validateValues.databaseUser" .) -}}
+{{- $messages := append $messages (include "wasp-event-service.validateValues.authentication.sasl" .) -}}
+{{- $messages := append $messages (include "wasp-event-service.validateValues.authentication.tls" .) -}}
+{{- $messages := without $messages "" -}}
+{{- $message := join "\n" $messages -}}
+
+{{- if $message -}}
+{{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Validate database name */}}
+{{- define "wasp-event-service.validateValues.databaseName" -}}
+{{- if and (not .Values.postgresql.enabled) .Values.externalDatabase.create -}}
+{{- $db_name := (include "wasp-event-service.databaseName" .) -}}
+{{- if not (regexMatch "^[a-zA-Z_]+$" $db_name) -}}
+wasp-event-service:
+    When creating a database the database name must consist of the characters a-z, A-Z and _ only
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Validate database username */}}
+{{- define "wasp-event-service.validateValues.databaseUser" -}}
+{{- if and (not .Values.postgresql.enabled) .Values.externalDatabase.create -}}
+{{- $db_user := (include "wasp-event-service.databaseUser" .) -}}
+{{- if not (regexMatch "^[a-zA-Z_]+$" $db_user) -}}
+wasp-event-service:
+    When creating a database the username must consist of the characters a-z, A-Z and _ only
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+{{/* Validate values of Schema Registry - SASL authentication */}}
+{{- define "wasp-event-service.validateValues.authentication.sasl" -}}
+{{- $kafkaProtocol := include "wasp-event-service.listenerType" ( dict "protocol" (ternary .Values.kafka.auth.clientProtocol .Values.externalKafka.auth.protocol .Values.kafka.enabled) ) -}}
+{{- if .Values.kafka.enabled }}
+{{- if and (contains "SASL" $kafkaProtocol) (or (not .Values.kafka.auth.sasl.jaas.clientUsers) (not .Values.kafka.auth.sasl.jaas.clientPasswords)) }}
+wasp-event-service: kafka.auth.jaas.clientUsers kafka.auth.jaas.clientPasswords
+    It's mandatory to set the SASL credentials when enabling SASL authentication with Kafka brokers.
+    You can specify these credentials setting the parameters below:
+      - kafka.auth.jaas.clientUsers
+      - kafka.auth.jaas.clientPasswords
+{{- end }}
+{{- else if and (contains "SASL" $kafkaProtocol) (or (not .Values.externalKafka.auth.jaas.user) (not .Values.externalKafka.auth.jaas.password)) }}
+wasp-event-service: externalKafka.auth.jaas.user externalKafka.auth.jaas.password
+    It's mandatory to set the SASL credentials when enabling SASL authentication with Kafka brokers.
+    You can specify these credentials setting the parameters below:
+      - externalKafka.auth.jaas.user
+      - externalKafka.auth.jaas.password
+{{- end -}}
+{{- end -}}
+
+{{/* Validate values of Schema Registry - TLS authentication */}}
+{{- define "wasp-event-service.validateValues.authentication.tls" -}}
+{{- $kafkaProtocol := include "wasp-event-service.listenerType" ( dict "protocol" (ternary .Values.kafka.auth.clientProtocol .Values.externalKafka.auth.protocol .Values.kafka.enabled) ) -}}
+{{- if and (contains "SSL" $kafkaProtocol) (not .Values.kafka.auth.jksSecret) }}
+kafka: auth.kafka.jksSecret
+    A secret containing the Schema Registry JKS files is required when TLS encryption in enabled
 {{- end -}}
 {{- end -}}
