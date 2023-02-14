@@ -1,26 +1,29 @@
-{{- $prepend  := .Values.config.prepend -}}
+{{- $prepend  := .Values.prepend -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "wasp-open-api.fullname" . }}-config
-  labels: {{- include "wasp-open-api.labels" . | nindent 4 }}
+  name: {{ printf "%s-configuration" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: wasp-open-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 data:
-  port: {{ .Values.config.port | quote }}
-  logLevel: {{ .Values.config.logLevel }}
-  apiDocsFilePath: {{ .Values.config.apiDocsFilePath }}
   openapi-merge.yaml: |
-    {{- if .Values.config.enabled }}
     inputs:
     - inputFile: base.json
-    {{- range .Values.config.paths }}
+    {{- range .Values.paths }}
     - inputURL: {{ . }}
     {{- if (not (empty $prepend)) }}
       pathModification:
         prepend: {{ $prepend  }}
     {{- end }}
     {{- end }}
-    output: {{ .Values.config.output }}
-    {{- end }}
+    output: {{ .Values.output }}
   base.json: |
     {
       "openapi": "3.0.3",
@@ -30,7 +33,7 @@ data:
       },
       "servers": [
         {
-          "url": {{ .Values.config.baseUrl | quote }}
+          "url": {{ .Values.baseUrl | quote }}
         }
       ],
       "components": {

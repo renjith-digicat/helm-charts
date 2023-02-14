@@ -1,7 +1,6 @@
-config:
-  paths:
-    - http://wasp-open-api-apidocsmockone:80/api-docs
-    - http://wasp-open-api-apidocsmocktwo:80/api-docs
+paths:
+  - http://wasp-open-api-apidocsmockone:80/api-docs
+  - http://wasp-open-api-apidocsmocktwo:80/api-docs
 apidocsmock:
   enabled: true
 apidocsmockone:

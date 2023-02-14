@@ -1,53 +1,52 @@
+
 {{/*
-Create name to be used with deployment.
+Return the proper wasp-open-api image name
 */}}
-{{- define "wasp-open-api.fullname" -}}
-    {{- if .Values.fullnameOverride -}}
-        {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-    {{- else -}}
-      {{- $name := default .Chart.Name .Values.nameOverride -}}
-      {{- if contains $name .Release.Name -}}
-        {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-      {{- else -}}
-        {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-      {{- end -}}
-    {{- end -}}
+{{- define "wasp-open-api.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
 {{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "wasp-open-api.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "wasp-open-api.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "wasp-open-api.fullname" . }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "wasp-open-api.labels" -}}
-helm.sh/chart: {{ include "wasp-open-api.chart" . }}
-{{ include "wasp-open-api.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Conditionally populate imagePullSecrets if present in the context
+Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "wasp-open-api.imagePullSecrets" -}}
-  {{- if (not (empty .Values.image.pullSecrets)) }}
-imagePullSecrets:
-    {{- range .Values.image.pullSecrets }}
-  - name: {{ . }}
-    {{- end }}
-  {{- end }}
+{{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.cronjob.initImage .Values.cronjob.image ) "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "wasp-open-api.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "common.names.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper cronjob init container image name
+*/}}
+{{- define "wasp-open-api.cronjob.initImage" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.cronjob.initImage "global" .Values.global) }}
+{{- end -}}
+
+{{/*
+Return the proper cronjob container image name
+*/}}
+{{- define "wasp-open-api.cronjob.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.cronjob.image "global" .Values.global) }}
+{{- end -}}
+
+{{/*
+Compile all warnings into a single message, and call fail.
+*/}}
+{{- define "wasp-open-api.validateValues" -}}
+{{- $messages := list -}}
+{{- $messages := without $messages "" -}}
+{{- $message := join "\n" $messages -}}
+
+{{- if $message -}}
+{{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
+{{- end -}}
 {{- end -}}
