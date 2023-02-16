@@ -1,4 +1,0 @@
-kafka:
-  enabled: true
-config:
-  kafkaBrokers: null
