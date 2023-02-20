@@ -1,80 +1,225 @@
 {{/*
-Create name to be used with deployment.
+Return the proper wasp-user-service image name
 */}}
-{{- define "wasp-user-service.fullname" -}}
-    {{- if .Values.fullnameOverride -}}
-        {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- define "wasp-user-service.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.image "global" .Values.global) }}
+{{- end -}}
+
+{{/*
+Return the proper init container image name
+*/}}
+{{- define "wasp-user-service.initDbCreate.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.initDbCreate.image "global" .Values.global) }}
+{{- end -}}
+
+{{/*
+Return the proper Docker Image Registry Secret Names
+*/}}
+{{- define "wasp-user-service.imagePullSecrets" -}}
+{{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.initDbCreate.image ) "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "wasp-user-service.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "common.names.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the initAdmin secret
+*/}}
+{{- define "wasp-user-service.initAdminSecretName" -}}
+{{- if .Values.initAdmin.existingSecret -}}
+    {{- printf "%s" (tpl .Values.initAdmin.existingSecret $) -}}
+{{- else -}}
+    {{- printf "%s-admin" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Retrieve initAdmin secret key
+*/}}
+{{- define "wasp-user-service.initAdminSecretKey" -}}
+    {{- if .Values.initAdmin.existingSecret -}}
+        {{- printf "%s" .Values.initAdmin.existingSecretKey -}}
     {{- else -}}
-      {{- $name := default .Chart.Name .Values.nameOverride -}}
-      {{- if contains $name .Release.Name -}}
-        {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-      {{- else -}}
-        {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-      {{- end -}}
+        {{- print "admin-password" -}}
     {{- end -}}
 {{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
+Return the wasp-authentication-service hostname
 */}}
-{{- define "wasp-user-service.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "wasp-user-service.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "wasp-user-service.fullname" . }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "wasp-user-service.labels" -}}
-helm.sh/chart: {{ include "wasp-user-service.chart" . }}
-{{ include "wasp-user-service.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Conditionally populate imagePullSecrets if present in the context
-*/}}
-{{- define "wasp-user-service.imagePullSecrets" -}}
-  {{- if (not (empty .Values.image.pullSecrets)) }}
-imagePullSecrets:
-    {{- range .Values.image.pullSecrets }}
-  - name: {{ . }}
-    {{- end }}
-  {{- end }}
+{{- define "wasp-user-service.authServiceHost" -}}
+{{- .Values.authServiceHost | quote -}}
 {{- end -}}
 
 {{/*
-Create a default fully qualified postgresql name.
+Return the wasp-authentication-service port
+*/}}
+{{- define "wasp-user-service.authServicePort" -}}
+{{- .Values.authServicePort | quote -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "wasp-user-service.postgresql.fullname" -}}
-{{- if .Values.config.externalPostgresql -}}
-{{ .Values.config.externalPostgresql | trunc 63 | trimSuffix "-" -}}
-{{- else if not ( .Values.postgresql.enabled ) -}}
-{{ fail "Postgresql must either be enabled or passed via config.externalPostgresql" }}
-{{- else if .Values.postgresql.fullnameOverride -}}
-{{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "postgresql" "chartValues" .Values.postgresql "context" $) -}}
+{{- end -}}
+
+{{/*
+Return the Postgresql hostname
+*/}}
+{{- define "wasp-user-service.databaseHost" -}}
+{{- ternary (include "wasp-user-service.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Return the Postgresql port
+*/}}
+{{- define "wasp-user-service.databasePort" -}}
+{{- ternary "5432" .Values.externalDatabase.port .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Return the Postgresql database name
+*/}}
+{{- define "wasp-user-service.databaseName" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- if .Values.global.postgresql -}}
+        {{- if .Values.global.postgresql.auth -}}
+            {{- coalesce .Values.global.postgresql.auth.database .Values.postgresql.auth.database -}}
+        {{- else -}}
+            {{- .Values.postgresql.auth.database -}}
+        {{- end -}}
+    {{- else -}}
+        {{- .Values.postgresql.auth.database -}}
+    {{- end -}}
 {{- else -}}
-{{- $name := default "postgresql" .Values.postgresql.nameOverride -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+    {{- .Values.externalDatabase.database -}}
 {{- end -}}
 {{- end -}}
 
-{{- define "wasp-user-service.initDb.name" -}}
-{{- $fullName := include "wasp-user-service.fullname" . -}}
-{{- printf "%s-db" $fullName | lower | trunc 63 | trimSuffix "-" -}}
+{{/*
+Return the Postgresql user
+*/}}
+{{- define "wasp-user-service.databaseUser" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- if .Values.global.postgresql -}}
+        {{- if .Values.global.postgresql.auth -}}
+            {{- coalesce .Values.global.postgresql.auth.username .Values.postgresql.auth.username -}}
+        {{- else -}}
+            {{- .Values.postgresql.auth.username -}}
+        {{- end -}}
+    {{- else -}}
+        {{- .Values.postgresql.auth.username -}}
+    {{- end -}}
+{{- else -}}
+    {{- .Values.externalDatabase.user -}}
+{{- end -}}
 {{- end -}}
 
-{{- define "wasp-user-service.initWaspAdmin.name" -}}
-{{- $fullName := include "wasp-user-service.fullname" . -}}
-{{- printf "%s-admin" $fullName | lower | trunc 63 | trimSuffix "-" -}}
+{{/*
+Return the PostgreSQL Secret Name
+*/}}
+{{- define "wasp-user-service.databaseSecretName" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- if .Values.global.postgresql -}}
+        {{- if .Values.global.postgresql.auth -}}
+            {{- if .Values.global.postgresql.auth.existingSecret -}}
+                {{- tpl .Values.global.postgresql.auth.existingSecret $ -}}
+            {{- else -}}
+                {{- default (include "wasp-user-service.postgresql.fullname" .) (tpl .Values.postgresql.auth.existingSecret $) -}}
+            {{- end -}}
+        {{- else -}}
+            {{- default (include "wasp-user-service.postgresql.fullname" .) (tpl .Values.postgresql.auth.existingSecret $) -}}
+        {{- end -}}
+    {{- else -}}
+        {{- default (include "wasp-user-service.postgresql.fullname" .) (tpl .Values.postgresql.auth.existingSecret $) -}}
+    {{- end -}}
+{{- else -}}
+    {{- default (printf "%s-externaldb" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-") (tpl .Values.externalDatabase.existingSecret $) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "wasp-user-service.databaseSecretPasswordKey" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- print "password" -}}
+{{- else -}}
+    {{- if .Values.externalDatabase.existingSecret -}}
+        {{- if .Values.externalDatabase.existingSecretPasswordKey -}}
+            {{- printf "%s" .Values.externalDatabase.existingSecretPasswordKey -}}
+        {{- else -}}
+            {{- print "password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- print "password" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "wasp-user-service.databaseSecretPostgresPasswordKey" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- print "postgres-password" -}}
+{{- else -}}
+    {{- if .Values.externalDatabase.existingSecret -}}
+        {{- if .Values.externalDatabase.existingSecretPostgresPasswordKey -}}
+            {{- printf "%s" .Values.externalDatabase.existingSecretPostgresPasswordKey -}}
+        {{- else -}}
+            {{- print "postgres-password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- print "postgres-password" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Compile all warnings into a single message, and call fail.
+*/}}
+{{- define "wasp-user-service.validateValues" -}}
+{{- $messages := list -}}
+{{- $messages := append $messages (include "wasp-user-service.validateValues.databaseName" .) -}}
+{{- $messages := append $messages (include "wasp-user-service.validateValues.databaseUser" .) -}}
+{{- $messages := without $messages "" -}}
+{{- $message := join "\n" $messages -}}
+
+{{- if $message -}}
+{{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Validate database name */}}
+{{- define "wasp-user-service.validateValues.databaseName" -}}
+{{- if and (not .Values.postgresql.enabled) .Values.externalDatabase.create -}}
+{{- $db_name := (include "wasp-user-service.databaseName" .) -}}
+{{- if not (regexMatch "^[a-zA-Z_]+$" $db_name) -}}
+wasp-user-service:
+    When creating a database the database name must consist of the characters a-z, A-Z and _ only
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Validate database username */}}
+{{- define "wasp-user-service.validateValues.databaseUser" -}}
+{{- if and (not .Values.postgresql.enabled) .Values.externalDatabase.create -}}
+{{- $db_user := (include "wasp-user-service.databaseUser" .) -}}
+{{- if not (regexMatch "^[a-zA-Z_]+$" $db_user) -}}
+wasp-user-service:
+    When creating a database the username must consist of the characters a-z, A-Z and _ only
+{{- end -}}
+{{- end -}}
 {{- end -}}
