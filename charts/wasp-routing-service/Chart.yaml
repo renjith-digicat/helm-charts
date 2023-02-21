@@ -24,4 +24,4 @@ maintainers:
 name: wasp-routing-service
 sources:
   - https://github.com/digicatapult/wasp-routing-service
-version: 3.0.0
+version: 3.0.1

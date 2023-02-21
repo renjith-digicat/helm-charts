@@ -29,4 +29,4 @@ maintainers:
 name: wasp-event-service
 sources:
   - https://github.com/digicatapult/wasp-event-service
-version: 1.0.0
+version: 1.0.1

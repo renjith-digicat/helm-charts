@@ -1,16 +1,28 @@
+annotations:
+  category: wasp
+  licenses: Apache-2.0
 apiVersion: v2
-name: wasp-ws-reading-service
-appVersion: '0.1.0'
-description: A Helm chart for wasp-ws-reading-service
-version: '0.0.9'
-type: application
-maintainers:
-  - name: digicatapult
-    email: opensource@digicatapult.org.uk
-    url: www.digicatapult.org.uk
-
+appVersion: 0.1.1
 dependencies:
-  - name: kafka
-    version: '20.x.x'
+  - condition: kafka.enabled
+    name: kafka
     repository: https://charts.bitnami.com/bitnami
-    condition: kafka.enabled
+    version: 20.x.x
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 2.x.x
+description: The wasp-ws-reading-service is a component of the WASP (Wide-Area-Sensor-Platform), an IoT platform designed to normalise and consolidate data from multiple IoT data services into one place.
+home: https://github.com/digicatapult/wasp-documentation
+icon: https://raw.githubusercontent.com/digicatapult/wasp-documentation/main/assets/icon.png
+keywords:
+  - IoT
+maintainers:
+  - name: digicatapult  # Digital Catapult
+    url: https://github.com/digicatapult/helm-charts
+    email: opensource@digicatapult.org.uk
+name: wasp-ws-reading-service
+sources:
+  - https://github.com/digicatapult/wasp-ws-reading-service
+version: 1.0.0

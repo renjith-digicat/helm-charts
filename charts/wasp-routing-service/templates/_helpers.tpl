@@ -14,9 +14,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{/*
 Return the type of listener
 Usage:
-{{ include "wasp-routing-service.listenerType" ( dict "protocol" .Values.path.to.the.Value ) }}
+{{ include "wasp-routing-service.kafka.listenerType" ( dict "protocol" .Values.path.to.the.Value ) }}
 */}}
-{{- define "wasp-routing-service.listenerType" -}}
+{{- define "wasp-routing-service.kafka.listenerType" -}}
 {{- if eq .protocol "plaintext" -}}
 PLAINTEXT
 {{- else if or (eq .protocol "tls") (eq .protocol "mtls") -}}
@@ -126,7 +126,7 @@ Compile all warnings into a single message, and call fail.
 
 {{/* Validate values of Schema Registry - SASL authentication */}}
 {{- define "wasp-routing-service.validateValues.authentication.sasl" -}}
-{{- $kafkaProtocol := include "wasp-routing-service.listenerType" ( dict "protocol" (ternary .Values.kafka.auth.clientProtocol .Values.externalKafka.auth.protocol .Values.kafka.enabled) ) -}}
+{{- $kafkaProtocol := include "wasp-routing-service.kafka.listenerType" ( dict "protocol" (ternary .Values.kafka.auth.clientProtocol .Values.externalKafka.auth.protocol .Values.kafka.enabled) ) -}}
 {{- if .Values.kafka.enabled }}
 {{- if and (contains "SASL" $kafkaProtocol) (or (not .Values.kafka.auth.sasl.jaas.clientUsers) (not .Values.kafka.auth.sasl.jaas.clientPasswords)) }}
 wasp-routing-service: kafka.auth.jaas.clientUsers kafka.auth.jaas.clientPasswords
@@ -146,7 +146,7 @@ wasp-routing-service: externalKafka.auth.jaas.user externalKafka.auth.jaas.passw
 
 {{/* Validate values of Schema Registry - TLS authentication */}}
 {{- define "wasp-routing-service.validateValues.authentication.tls" -}}
-{{- $kafkaProtocol := include "wasp-routing-service.listenerType" ( dict "protocol" (ternary .Values.kafka.auth.clientProtocol .Values.externalKafka.auth.protocol .Values.kafka.enabled) ) -}}
+{{- $kafkaProtocol := include "wasp-routing-service.kafka.listenerType" ( dict "protocol" (ternary .Values.kafka.auth.clientProtocol .Values.externalKafka.auth.protocol .Values.kafka.enabled) ) -}}
 {{- if and (contains "SSL" $kafkaProtocol) (not .Values.auth.kafka.jksSecret) }}
 kafka: auth.kafka.jksSecret
     A secret containing the Schema Registry JKS files is required when TLS encryption in enabled
