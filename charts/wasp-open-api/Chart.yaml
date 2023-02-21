@@ -31,4 +31,4 @@ maintainers:
 name: wasp-open-api
 sources:
   - https://github.com/digicatapult/wasp-open-api
-version: 1.0.0
+version: 1.0.1
