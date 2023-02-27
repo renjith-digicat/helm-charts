@@ -81,7 +81,7 @@ metadata:
     {{- end }}
   {{- if or .Values.ingress.authenticatedAnnotations .Values.commonAnnotations }}
   annotations:
-    {{- if .Values.ingress.autheticatedAnnotations }}
+    {{- if .Values.ingress.authenticatedAnnotations }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.ingress.authenticatedAnnotations "context" $) | nindent 4 }}
     {{- end }}
     {{- if .Values.commonAnnotations }}

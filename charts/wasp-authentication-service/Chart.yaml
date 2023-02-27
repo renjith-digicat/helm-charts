@@ -25,4 +25,4 @@ maintainers:
 name: wasp-authentication-service
 sources:
   - https://github.com/digicatapult/wasp-authentication-service
-version: 1.0.0
+version: 1.0.1
