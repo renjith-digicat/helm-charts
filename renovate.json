@@ -1,13 +1,12 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["github>digicatapult/renovate-config"],
+	"enabledManagers": ["github-actions", "helmv3", "helm-values", "regex"]
 	"helmv3": {
-		"enabled": true,
 		"automerge": false
 
 	},
 	"helm-values": {
-		"enabled": true,
 		"automerge": false
 	},
 	"regexManagers": [
