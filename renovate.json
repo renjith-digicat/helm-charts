@@ -17,5 +17,11 @@
 			],
 			"datasourceTemplate": "docker"
 		}
+	],
+	"packageRules": [
+		{
+			"groupName": "helm chart updates",
+			"matchManagers": ["helmv3", "helm-values"]
+		}
 	]
 }
