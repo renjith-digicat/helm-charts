@@ -18,8 +18,9 @@ deployment:
   replicaCount: 1
 
 ingress:
+  host: ""
   annotations: {}
-  # className
+  className: ""
   enabled: true
   paths:
     - /v1/members
@@ -32,7 +33,7 @@ service:
 image:
   repository: digicatapult/dscp-identity-service
   pullPolicy: IfNotPresent
-  tag: 'v1.8.2'
+  tag: 'v1.8.3'
 
 postgresql:
   enabled: true

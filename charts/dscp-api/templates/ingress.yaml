@@ -17,6 +17,9 @@ spec:
   {{- end }}
   rules:
     - http:
+        {{- if .Values.ingress.host }}
+        host: {{ .Values.ingress.host }}
+        {{- end }}
         paths:
           {{- range $ingressPaths }}
           - pathType: Prefix

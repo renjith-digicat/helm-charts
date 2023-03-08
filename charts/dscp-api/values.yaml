@@ -24,8 +24,9 @@ deployment:
   replicaCount: 1
 
 ingress:
+  host: ""
   annotations: {}
-  # className: ""
+  className: ""
   enabled: true
   paths:
     - /v3
@@ -38,7 +39,7 @@ service:
 image:
   repository: digicatapult/dscp-api
   pullPolicy: IfNotPresent
-  tag: 'v4.8.2'
+  tag: 'v4.8.4'
 
 dscpNode:
   enabled: false
