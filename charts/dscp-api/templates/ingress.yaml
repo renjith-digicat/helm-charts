@@ -16,10 +16,8 @@ spec:
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
   rules:
-    - http:
-        {{- if .Values.ingress.host }}
-        host: {{ .Values.ingress.host }}
-        {{- end }}
+    - host: {{ .Values.ingress.host }}
+      http:
         paths:
           {{- range $ingressPaths }}
           - pathType: Prefix
