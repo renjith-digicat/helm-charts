@@ -33,7 +33,7 @@ service:
 image:
   repository: digicatapult/dscp-identity-service
   pullPolicy: IfNotPresent
-  tag: 'v1.8.3'
+  tag: 'v1.8.6'
 
 postgresql:
   enabled: true
