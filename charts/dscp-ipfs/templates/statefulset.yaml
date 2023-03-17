@@ -126,7 +126,7 @@ spec:
               {{ .Values.ipfs.binary }} config --json Swarm.AddrFilters {{ .Values.ipfs.swarmAddrFilters | toJson | quote }};
               {{ .Values.ipfs.binary }} config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://0.0.0.0:{{ .Values.apiService.ports.api }}\", \"http://127.0.0.1:{{ .Values.apiService.ports.api }}\"]";
               {{ .Values.ipfs.binary }} bootstrap rm --all{{ if .Values.ipfs.bootNodeAddress }};
-              if [ ! -z "$BOOT_NODE_ADDRESS" ]; then {{ .Values.command }} bootstrap add {{ .Values.ipfs.bootNodeAddress | toJson | quote }}; fi;{{ end }}
+              if [ ! -z "$BOOT_NODE_ADDRESS" ]; then {{ .Values.ipfs.binary }} bootstrap add {{ .Values.ipfs.bootNodeAddress | toJson | quote }}; fi;{{ end }}
           {{- end }}
           {{- end }}
           volumeMounts:
