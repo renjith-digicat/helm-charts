@@ -1,177 +1,321 @@
-
-{{ $fullname :=  include "dscp-ipfs.fullname" . }}
-apiVersion: apps/v1
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
-  name: {{ include "dscp-ipfs.fullname" . }}
-  labels:
-    {{- include "dscp-ipfs.labels" . | nindent 4 }}
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: dscp-ipfs
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
-  serviceName: {{ include "dscp-ipfs.fullname" . }}
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  podManagementPolicy: {{ .Values.podManagementPolicy | quote }}
   selector:
-    matchLabels:
-      name: {{ include "dscp-ipfs.fullname" . }}
+    matchLabels: {{ include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: dscp-ipfs
+  serviceName: {{ template "common.names.fullname" . }}
+  {{- if .Values.updateStrategy }}
+  updateStrategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
   template:
     metadata:
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
-        {{- with .Values.statefulSet.annotations }}
-        {{- toYaml . | nindent 8 }}
+      {{- if .Values.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: dscp-ipfs
+        {{- if .Values.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
-      labels:
-        name: {{ include "dscp-ipfs.fullname" . }}
+        {{- if .Values.commonLabels }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 8 }}
+        {{- end }}
     spec:
-      {{- include "dscp-ipfs.imagePullSecrets" . | indent 6 }}
+      serviceAccountName: {{ template "dscp-ipfs.serviceAccountName" . }}
+      {{- include "dscp-ipfs.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "dscp-ipfs" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "dscp-ipfs" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
       initContainers:
-        - name: {{ include "dscp-ipfs.initIpfsConfig.name" . }}
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-          env:
-            - name: IPFS_PATH
-              value: {{ .Values.config.ipfsDataPath }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "dscp-ipfs.fullname" . }}-config
-          command: ['/bin/sh', '-c', '-e', '-x']
+        {{- if and .Values.volumePermissions.enabled .Values.persistence.enabled }}
+        - name: volume-permissions
+          image: {{ include "dscp-ipfs.volumePermissions.image" . }}
+          imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
+          command:
+            - /bin/sh
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.volumePermissions.resources }}
+          resources: {{- toYaml .Values.volumePermissions.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ default (include "common.names.fullname" .) .Values.persistence.existingClaim }}
+              mountPath: {{ .Values.persistence.mountPath }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+        {{- end }}
+        {{- if .Values.ipfs.initConfig.enabled }}
+        - name: init-ipfs-config
+          image: {{ include "dscp-ipfs.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else }}
+          {{ if .Values.ipfs.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+            - -c
+            - -e
+          {{- end }}
+          {{ if .Values.ipfs.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.args "context" $) | nindent 12 }}
+          {{- else }}
           args:
             - |
-              [ ! -f "$IPFS_PATH/config" ] && $ipfsCommand init --profile server;
-              $ipfsCommand config Addresses.API /ip4/0.0.0.0/tcp/$ipfsApiPort;
-              $ipfsCommand config --json Addresses.Swarm "[\"/ip4/0.0.0.0/tcp/$ipfsSwarmPort\"]";
-              $ipfsCommand config --json Addresses.Announce "[\"/dns4/{{ $fullname }}-swarm.{{ .Release.Namespace }}.svc.cluster.local/tcp/$ipfsSwarmPort/\"]";
-              $ipfsCommand config Datastore.StorageMax $(echo "$dataVolumeSize""Gb");
-              $ipfsCommand config --json Swarm.AddrFilters $ipfsSwarmAddrFilters;
-              $ipfsCommand config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://0.0.0.0:$ipfsApiPort\", \"http://127.0.0.1:$ipfsApiPort\"]";
-              $ipfsCommand bootstrap rm --all;
-              if [ ! -z "$ipfsBootNodeAddress" ]; then $ipfsCommand bootstrap add $ipfsBootNodeAddress; fi;
+              [ ! -f "{{ .Values.persistence.mountPath }}/config" ] && {{ .Values.ipfs.binary }} init --profile server;
+              export POD_INDEX="${HOSTNAME##*-}";
+              {{ .Values.ipfs.binary }} config Addresses.API /ip4/0.0.0.0/tcp/{{ .Values.apiService.ports.api | default 5001 }};
+              {{ .Values.ipfs.binary }} config --json Addresses.Swarm "[\"/ip4/0.0.0.0/tcp/{{ .Values.swarmService.ports.swarm }}\"]";
+              {{ .Values.ipfs.binary }} config --json Addresses.Announce "[\"/dns4/{{ include "common.names.fullname" . }}-$(echo "$POD_INDEX")-swarm.{{ .Release.Namespace }}.svc.cluster.local/tcp/{{ .Values.swarmService.ports.swarm }}/\"]";
+              {{ .Values.ipfs.binary }} config Datastore.StorageMax {{ .Values.persistence.size | replace "Gi" "Gb" }};
+              {{ .Values.ipfs.binary }} config Routing.Type --json {{ .Values.ipfs.routingType | toJson | quote }};
+              {{ .Values.ipfs.binary }} config --json Discovery.MDNS.Enabled {{ true | toJson | quote }};
+              {{ .Values.ipfs.binary }} config --json Swarm.AddrFilters {{ .Values.ipfs.swarmAddrFilters | toJson | quote }};
+              {{ .Values.ipfs.binary }} config --json API.HTTPHeaders.Access-Control-Allow-Origin "[\"http://0.0.0.0:{{ .Values.apiService.ports.api }}\", \"http://127.0.0.1:{{ .Values.apiService.ports.api }}\"]";
+              {{ .Values.ipfs.binary }} bootstrap rm --all{{ if .Values.ipfs.bootNodeAddress }};
+              if [ ! -z "$BOOT_NODE_ADDRESS" ]; then {{ .Values.command }} bootstrap add {{ .Values.ipfs.bootNodeAddress | toJson | quote }}; fi;{{ end }}
+          {{- end }}
+          {{- end }}
           volumeMounts:
-            - mountPath: {{ .Values.config.ipfsDataPath }}
-              name: ipfs-data
-        {{- if and .Values.config.publicKey .Values.config.privateKey }}              
-        - name: {{ include "dscp-ipfs.initIpfsConfig.name" . }}-keys
-          image: jetbrainsinfra/jq:latest
-          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+            - name: {{ default (include "common.names.fullname" .) .Values.persistence.existingClaim }}
+              mountPath: {{ .Values.persistence.mountPath }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
           env:
             - name: IPFS_PATH
-              value: {{ .Values.config.ipfsDataPath }}
+              value: {{ .Values.persistence.mountPath }}
+            {{- if .Values.bootNodeAddress }}
+            - name: BOOT_NODE_ADDRESS
+              value: {{ .Values.ipfs.bootNodeAddress }}
+            {{- end}}
+        {{- end }}
+        {{- if and .Values.ipfs.initKeys.enabled (or .Values.ipfs.existingSecret (and .Values.ipfs.publickey .Values.ipfs.privatekey)) }}
+        - name: init-ipfs-keys
+          image: jetbrainsinfra/jq:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else }}
+          {{ if .Values.ipfs.keyCommand }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.keyCommand "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+            - -c
+            - -e
+          {{- end }}
+          {{ if .Values.ipfs.keyArgs }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.keyArgs "context" $) | nindent 12 }}
+          {{- else }}
+          args:
+            - |
+              echo "$(jq --arg publickey $IPFS_PUBLIC_KEY '.Identity.PeerID = $publickey' {{ .Values.persistence.mountPath }}/config)" > {{ .Values.persistence.mountPath }}/config ;
+              echo "$(jq --arg privatekey $IPFS_PRIVATE_KEY '.Identity.PrivKey = $privatekey' {{ .Values.persistence.mountPath }}/config)" > {{ .Values.persistence.mountPath }}/config ;
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ default (include "common.names.fullname" .) .Values.persistence.existingClaim }}
+              mountPath: {{ .Values.persistence.mountPath }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+          env:
+            - name: IPFS_PATH
+              value: {{ .Values.persistence.mountPath }}
             - name: IPFS_PUBLIC_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-secret
-                  key: publicKey
+                  name: {{ include "dscp-ipfs.secretName" . }}
+                  key: {{ include "dscp-ipfs.publicKeyKey" . }}
             - name: IPFS_PRIVATE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-secret
-                  key: privateKey
-          envFrom:
-            - configMapRef:
-                name: {{ include "dscp-ipfs.fullname" . }}-config
-          command: ['/bin/sh', '-c', '-e', '-x']
-          args:
-            - |
-              echo "$(jq --arg publickey $IPFS_PUBLIC_KEY '.Identity.PeerID = $publickey' /ipfs/config)" > /ipfs/config ;
-              echo "$(jq --arg privatekey $IPFS_PRIVATE_KEY '.Identity.PrivKey = $privatekey' /ipfs/config)" > /ipfs/config ;
-          volumeMounts:
-            - mountPath: {{ .Values.config.ipfsDataPath }}
-              name: ipfs-data
+                  name: {{ include "dscp-ipfs.secretName" . }}
+                  key: {{ include "dscp-ipfs.privateKeyKey" . }}
+        {{- end }}
+        {{- if .Values.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
         {{- end }}
       containers:
-        - name: {{ include "dscp-ipfs.fullname" . }}
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-          command: [ './app/index.js' ]
-          env:
-            - name: HEALTHCHECK_POLL_PERIOD_MS
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: healthCheckPollPeriod
-            - name: HEALTHCHECK_TIMEOUT_MS
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: healthCheckTimeout
-            - name: PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: healthCheckPort
-            - name: IPFS_API_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: ipfsApiPort
-            - name: IPFS_API_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: ipfsApiHost
-            - name: LOG_LEVEL
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: logLevel
-            - name: NODE_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: nodeHost
-            - name: NODE_PORT
-              value: "9944"
-            {{- if .Values.config.ipfsCommand }}
-            - name: IPFS_EXECUTABLE
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: ipfsCommand
-            {{- end }}
-            - name: IPFS_ARGS
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: ipfsArgs
-            - name: IPFS_LOGGING
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ include "dscp-ipfs.fullname" . }}-config
-                  key: ipfsLogLevel
-            - name: IPFS_PATH
-              value: {{ .Values.config.ipfsDataPath }}
-          volumeMounts:
-            - mountPath: {{ .Values.config.ipfsDataPath }}
-              name: ipfs-data
-          ports:
-            - containerPort: {{ .Values.config.healthCheckPort }}
-              name: http-health
-              protocol: TCP
-            - containerPort: {{ .Values.config.ipfsSwarmPort }}
-              name: ipfs-swarm
-              protocol: TCP
-            - containerPort: {{ .Values.config.ipfsApiPort }}
-              name: ipfs-http-api
-              protocol: TCP
-          {{- if .Values.statefulSet.livenessProbe.enabled }}
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: http-health
-            initialDelaySeconds: 60
-            failureThreshold: 5
-            timeoutSeconds: 3
-            periodSeconds: 10
+        - name: dscp-ipfs
+          image: {{ template "dscp-ipfs.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DSCP_DEBUG
+              value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.logLevel | quote }}
+            - name: PORT
+              value: {{ .Values.containerPorts.http | quote }}
+            - name: HEALTHCHECK_POLL_PERIOD_MS
+              value: {{ .Values.healthCheckPollPeriod | quote }}
+            - name: HEALTHCHECK_TIMEOUT
+              value: {{ .Values.healthCheckTimeout | quote }}
+            - name: IPFS_PATH
+              value: {{ .Values.persistence.mountPath }}
+            - name: IPFS_LOGGING
+              value: {{ .Values.ipfs.logLevel | quote }}
+            - name: IPFS_EXECUTABLE
+              value: {{ .Values.ipfs.binary | quote }}
+            - name: IPFS_ARGS
+              value: {{ .Values.ipfs.runtimeArgs | toJson | quote }}
+            - name: IPFS_API_HOST
+              value: "localhost"
+            - name: IPFS_API_PORT
+              value: {{ .Values.containerPorts.api | quote }}
+            - name: NODE_HOST
+              value: {{ include "dscp-ipfs.dscpNodeHost" . }}
+            - name: NODE_PORT
+              value: {{ include "dscp-ipfs.dscpNodePort" . }}
+            {{- if .Values.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.containerPorts.http }}
+            - name: api
+              containerPort: {{ .Values.containerPorts.api }}
+            - name: swarm
+              containerPort: {{ .Values.containerPorts.swarm }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.livenessProbe "enabled") "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.readinessProbe "enabled") "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled") "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ default (include "common.names.fullname" .) .Values.persistence.existingClaim }}
+              mountPath: {{ .Values.persistence.mountPath }}
+              {{- if .Values.persistence.subPath }}
+              subPath: {{ .Values.persistence.subPath }}
+              {{- end }}
+          {{- if .Values.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+  {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
-    - apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: ipfs-data
+    - metadata:
+        name: {{ default (include "common.names.fullname" .) .Values.persistence.existingClaim }}
+        annotations:
+          {{- if .Values.persistence.annotations }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.persistence.annotations "context" $) | nindent 10 }}
+          {{- end }}
+          {{- if .Values.commonAnnotations }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 10 }}
+          {{- end }}
+        {{- if .Values.commonLabels }}
+        labels: {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 10 }}
+        {{- end }}
       spec:
-        accessModes: [ "ReadWriteOnce" ]
-        {{- if .Values.storage.storageClass }}
-        storageClassName: {{ .Values.storage.storageClass }}
+        accessModes:
+        {{- range .Values.persistence.accessModes }}
+          - {{ . | quote }}
         {{- end }}
         resources:
           requests:
-            storage: {{ printf "%vGi" .Values.storage.dataVolumeSize | quote }}
+            storage: {{ .Values.persistence.size | quote }}
+        {{- if .Values.persistence.selector }}
+        selector: {{- include "common.tplvalues.render" (dict "value" .Values.persistence.selector "context" $) | nindent 10 }}
+        {{- end }}
+        {{- include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) | nindent 8 }}
+  {{- end }}
