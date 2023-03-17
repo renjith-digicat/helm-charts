@@ -143,7 +143,7 @@ spec:
               value: {{ .Values.ipfs.bootNodeAddress }}
             {{- end}}
         {{- end }}
-        {{- if and .Values.ipfs.initKeys.enabled (or .Values.ipfs.existingSecret (and .Values.ipfs.publickey .Values.ipfs.privatekey)) }}
+        {{- if and .Values.ipfs.initKeys.enabled ( or .Values.ipfs.existingSecret ( and .Values.ipfs.publickey .Values.ipfs.privatekey )) }}
         - name: init-ipfs-keys
           image: jetbrainsinfra/jq:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
