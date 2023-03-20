@@ -2,6 +2,7 @@ annotations:
   category: wasp
   licenses: Apache-2.0
 apiVersion: v2
+# renovate: image=digicatapult/wasp-ws-reading-service
 appVersion: 0.1.1
 dependencies:
   - condition: kafka.enabled
@@ -25,4 +26,4 @@ maintainers:
 name: wasp-ws-reading-service
 sources:
   - https://github.com/digicatapult/wasp-ws-reading-service
-version: 1.0.0
+version: 1.0.1

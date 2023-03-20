@@ -2,6 +2,7 @@ annotations:
   category: wasp
   licenses: Apache-2.0
 apiVersion: v2
+# renovate: image=digicatapult/wasp-routing-service
 appVersion: 2.1.2
 dependencies:
   - condition: kafka.enabled
@@ -24,4 +25,4 @@ maintainers:
 name: wasp-routing-service
 sources:
   - https://github.com/digicatapult/wasp-routing-service
-version: 3.0.1
+version: 3.0.2

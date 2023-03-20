@@ -2,6 +2,7 @@ annotations:
   category: wasp
   licenses: Apache-2.0
 apiVersion: v2
+# renovate: image=digicatapult/wasp-authentication-service
 appVersion: 0.1.2
 dependencies:
   - condition: postgresql.enabled
@@ -25,4 +26,4 @@ maintainers:
 name: wasp-authentication-service
 sources:
   - https://github.com/digicatapult/wasp-authentication-service
-version: 1.0.1
+version: 1.0.2

@@ -1,8 +1,9 @@
 apiVersion: v2
 name: dscp-identity-service
+# renovate: image=digicatapult/dscp-identity-service
 appVersion: '1.8.6'
 description: A Helm chart for dscp-identity-service
-version: '1.8.6'
+version: '1.8.7'
 type: application
 maintainers:
   - name: digicatapult

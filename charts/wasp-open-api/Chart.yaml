@@ -2,6 +2,7 @@ annotations:
   category: wasp
   licenses: Apache-2.0
 apiVersion: v2
+# renovate: image=digicatapult/wasp-open-api
 appVersion: 0.1.0
 dependencies:
   - condition: apiDocsMock.enabled
@@ -31,4 +32,4 @@ maintainers:
 name: wasp-open-api
 sources:
   - https://github.com/digicatapult/wasp-open-api
-version: 1.1.0
+version: 1.1.1

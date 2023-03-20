@@ -2,6 +2,7 @@ annotations:
   category: wasp
   licenses: Apache-2.0
 apiVersion: v2
+# renovate: image=digicatapult/wasp-reading-service
 appVersion: 0.1.0
 dependencies:
   - condition: postgresql.enabled
@@ -29,4 +30,4 @@ maintainers:
 name: wasp-reading-service
 sources:
   - https://github.com/digicatapult/wasp-reading-service
-version: 1.0.1
+version: 1.0.2
