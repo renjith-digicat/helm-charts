@@ -1,8 +1,25 @@
-dscpNode:
+node:
   enabled: false
 
-dscpIpfs:
+ipfs:
   enabled: true
+  image:
+    repository: ipfs/kubo
+    tag: v0.18.1
+    pullPolicy: IfNotPresent
+  ipfs:
+    initConfig:
+      enabled: false
+    initKeys:
+      enabled: false
+  readinessProbe:
+    enabled: false
+  livenessProbe:
+    enabled: false
+  startupProbe:
+    enabled: false
+  command: []
+  args: []
   dscpNode:
     enabled: true
     node:

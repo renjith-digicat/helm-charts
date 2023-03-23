@@ -1,9 +1,9 @@
 apiVersion: v2
 name: dscp-identity-service
 # renovate: image=digicatapult/dscp-identity-service
-appVersion: '1.8.6'
+appVersion: '1.8.12'
 description: A Helm chart for dscp-identity-service
-version: '1.8.7'
+version: '1.8.8'
 type: application
 maintainers:
   - name: digicatapult
@@ -11,11 +11,11 @@ maintainers:
     url: www.digicatapult.org.uk
 dependencies:
   - name: postgresql
-    version: '^11.9.10'
+    version: '^12.x.x'
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: dscp-node
-    version: '4.5.5'
+    version: '4.5.6'
     repository: https://digicatapult.github.io/helm-charts/
     condition: dscpNode.enabled
     alias: dscpNode

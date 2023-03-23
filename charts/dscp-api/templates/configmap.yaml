@@ -16,13 +16,13 @@ data:
   nodeHost: {{ include "dscp-api.node-host" . }}
   {{- if .Values.config.externalIpfsHost }}
   ipfsHost: {{ .Values.config.externalIpfsHost }}
-  {{- else if .Values.dscpIpfs.enabled }}
-  ipfsHost: {{ template "dscp-ipfs.fullname" .Subcharts.dscpIpfs }}-api
+  {{- else if .Values.ipfs.enabled }}
+  ipfsHost: "{{ template "common.names.fullname" .Subcharts.ipfs }}-api"
   {{- end }}
   {{- if .Values.config.externalIpfsPort }}
   ipfsPort: {{ .Values.config.externalIpfsPort | quote }}
-  {{- else if .Values.dscpIpfs.enabled }}
-  ipfsPort: {{ template "dscp-ipfs.ipfsApiPort" .Subcharts.dscpIpfs }}
+  {{- else if .Values.ipfs.enabled }}
+  ipfsPort: "5001"
   {{- end }}
   {{- if eq .Values.config.auth.type "JWT" }}
   authJwksUri: {{ .Values.config.auth.jwksUri }}

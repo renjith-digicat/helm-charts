@@ -27,12 +27,12 @@ Template to define the dscp-node hostname.
 {{- define "dscp-api.node-host" -}}
   {{- if .Values.config.externalNodeHost -}}
     {{- .Values.config.externalNodeHost -}}
-  {{- else if .Values.dscpNode.enabled -}}
-    {{- template "dscp-node.fullname" .Subcharts.dscpNode -}}
-  {{- else if .Values.dscpIpfs.dscpNode.enabled -}}
-    {{- template "dscp-ipfs-node.fullname" .Subcharts.dscpIpfs -}}
+  {{- else if .Values.node.enabled -}}
+    {{- template "dscp-node.fullname" .Subcharts.node -}}
+  {{- else if .Values.ipfs.dscpNode.enabled -}}
+    {{- template "dscp-ipfs.dscpNodeHost" .Subcharts.ipfs -}}
   {{- else }}
-    {{- fail "Must supply either externalNodeHost or enable dscpNode or dscpIpfs" -}}
+    {{- fail "Must supply either externalNodeHost or enable node or ipfs" -}}
   {{- end -}}
 {{- end -}}
 
