@@ -1,4 +1,4 @@
-dscpNode:
+node:
   enabled: true
   node:
     chain: dev
@@ -10,3 +10,4 @@ dscpNode:
     - "--rpc-cors=all"
     - "--unsafe-ws-external"
     - "--unsafe-rpc-external"
+selfAddress: 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty

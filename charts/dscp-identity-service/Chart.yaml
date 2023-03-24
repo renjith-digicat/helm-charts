@@ -1,21 +1,36 @@
+annotations:
+  category: dscp
+  licenses: Apache-2.0
 apiVersion: v2
-name: dscp-identity-service
 # renovate: image=digicatapult/dscp-identity-service
-appVersion: '1.8.12'
-description: A Helm chart for dscp-identity-service
-version: '1.8.8'
-type: application
-maintainers:
-  - name: digicatapult
-    email: opensource@digicatapult.org.uk
-    url: www.digicatapult.org.uk
+appVersion: v1.8.14
 dependencies:
-  - name: postgresql
-    version: '^12.x.x'
+  - condition: postgresql.enabled
+    name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
+    version: 12.x.x
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 2.x.x
   - name: dscp-node
-    version: '4.5.6'
+    alias: node
     repository: https://digicatapult.github.io/helm-charts/
-    condition: dscpNode.enabled
-    alias: dscpNode
+    tags:
+      - dscp-node
+    version: 4.5.6
+    condition: node.enabled
+description: The dscp-identity-service is a component of the DSCP (Digital-Supply-Chain-Platform), a blockchain platform.
+home: https://github.com/digicatapult/dscp-documentation
+icon: https://raw.githubusercontent.com/digicatapult/dscp-documentation/main/assets/icon.png
+keywords:
+  - DSCP
+maintainers:
+  - name: digicatapult  # Digital Catapult
+    url: https://github.com/digicatapult/helm-charts
+    email: opensource@digicatapult.org.uk
+name: dscp-identity-service
+sources:
+  - https://github.com/digicatapult/dscp-identity-service
+version: 2.0.0
