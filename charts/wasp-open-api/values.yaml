@@ -86,6 +86,9 @@ apiDocsFilePath: /data/api-docs.json
 ## @param prepend what to prepend to the pathModification in the merged OpenAPI spec
 ##
 prepend: ""
+## @param openApiTitle The title of the merged OpenAPI spec
+##
+openApiTitle: "WASP Open API"
 ## @param apiDocsMock.enabled Enable API docs mock
 ##
 apiDocsMock:
@@ -104,7 +107,7 @@ apiDocsMock:
 image:
   registry: docker.io
   repository: digicatapult/wasp-open-api
-  tag: v0.1.0
+  tag: v0.1.4
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

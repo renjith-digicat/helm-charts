@@ -3,7 +3,7 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/wasp-open-api
-appVersion: 0.1.0
+appVersion: 0.1.4
 dependencies:
   - condition: apiDocsMock.enabled
     name: nginx
@@ -32,4 +32,4 @@ maintainers:
 name: wasp-open-api
 sources:
   - https://github.com/digicatapult/wasp-open-api
-version: 1.1.1
+version: 1.2.0

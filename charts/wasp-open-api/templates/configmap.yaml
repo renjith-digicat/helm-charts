@@ -28,7 +28,7 @@ data:
     {
       "openapi": "3.0.3",
       "info": {
-        "title": "WASP Open API",
+        "title": {{ .Values.openApiTitle | quote }},
         "version": "0.0.1"
       },
       "servers": [
