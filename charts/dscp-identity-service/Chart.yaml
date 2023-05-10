@@ -3,7 +3,7 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/dscp-identity-service
-appVersion: v1.8.14
+appVersion: v1.9.3
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
@@ -19,7 +19,7 @@ dependencies:
     repository: https://digicatapult.github.io/helm-charts/
     tags:
       - dscp-node
-    version: 4.5.6
+    version: 5.x.x
     condition: node.enabled
 description: The dscp-identity-service is a component of the DSCP (Digital-Supply-Chain-Platform), a blockchain platform.
 home: https://github.com/digicatapult/dscp-documentation
@@ -33,4 +33,4 @@ maintainers:
 name: dscp-identity-service
 sources:
   - https://github.com/digicatapult/dscp-identity-service
-version: 2.0.0
+version: 2.0.1

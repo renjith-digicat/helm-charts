@@ -6,7 +6,7 @@ name: dscp-ipfs
 description: dscp-ipfs is a component of the DSCP project that provides a distributed IPFS based storage solution for the DSCP platform.
 # renovate: image=digicatapult/dscp-ipfs
 appVersion: 2.9.32
-version: 3.0.7
+version: 3.0.8
 dependencies:
   - name: common
     repository: https://charts.bitnami.com/bitnami

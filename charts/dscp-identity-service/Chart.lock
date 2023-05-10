@@ -1,12 +1,12 @@
 dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 12.2.6
+  version: 12.4.3
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 2.2.4
+  version: 2.2.5
 - name: dscp-node
   repository: https://digicatapult.github.io/helm-charts/
-  version: 4.5.6
-digest: sha256:81ccae34d9ecf0161058b4af43477c95122ddfc5f302a5a75a7335a0a20784c0
-generated: "2023-03-23T15:18:55.116782Z"
+  version: 5.0.0
+digest: sha256:269db457431dcd36ba6b02b39c9a5a84474b5a15249abd4db01e98e01846d8c7
+generated: "2023-05-10T09:44:45.298281+01:00"
