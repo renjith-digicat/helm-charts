@@ -87,7 +87,7 @@ enableIndexer: true
 image:
   registry: docker.io
   repository: digicatapult/dscp-matchmaker-api
-  tag: v0.9.2
+  tag: v1.0.1
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

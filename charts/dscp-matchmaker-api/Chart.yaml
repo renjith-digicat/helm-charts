@@ -3,7 +3,7 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/dscp-matchmaker-api
-appVersion: v0.9.2
+appVersion: v1.0.1
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
@@ -19,7 +19,7 @@ dependencies:
     repository: https://digicatapult.github.io/helm-charts/
     tags:
       - dscp-node
-    version: 4.5.6
+    version: 5.x.x
     condition: node.enabled
 description: The dscp-matchmaker-api is a component of the DSCP (Digital-Supply-Chain-Platform), a blockchain platform.
 home: https://github.com/digicatapult/dscp-documentation
@@ -33,4 +33,4 @@ maintainers:
 name: dscp-matchmaker-api
 sources:
   - https://github.com/digicatapult/dscp-matchmaker-api
-version: 0.0.1
+version: 0.0.2
