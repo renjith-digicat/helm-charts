@@ -157,7 +157,7 @@ healthCheckTimeout: 2000
 image:
   registry: docker.io
   repository: digicatapult/dscp-ipfs
-  tag: v2.9.3
+  tag: v2.9.32
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
