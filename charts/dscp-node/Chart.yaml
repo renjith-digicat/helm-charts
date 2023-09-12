@@ -6,6 +6,6 @@ maintainers:
     url: www.digicatapult.org.uk
 description: A Helm chart to deploy DSCP nodes
 type: application
-version: 5.0.0
+version: 6.0.0
 # renovate: image=digicatapult/dscp-node
-appVersion: '8.0.0'
+appVersion: '9.0.0'
