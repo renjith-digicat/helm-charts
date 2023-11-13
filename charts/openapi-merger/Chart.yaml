@@ -1,9 +1,8 @@
 annotations:
-  category: wasp
   licenses: Apache-2.0
 apiVersion: v2
-# renovate: image=digicatapult/wasp-open-api
-appVersion: 0.1.4
+# renovate: image=digicatapult/openapi-merger
+appVersion: 1.0.19
 dependencies:
   - condition: apiDocsMock.enabled
     name: nginx
@@ -20,16 +19,14 @@ dependencies:
     tags:
       - bitnami-common
     version: 2.x.x
-description: The wasp-open-api is a component of the WASP (Wide-Area-Sensor-Platform), an IoT platform designed to normalise and consolidate data from multiple IoT data services into one place.
-home: https://github.com/digicatapult/wasp-documentation
-icon: https://raw.githubusercontent.com/digicatapult/wasp-documentation/main/assets/icon.png
+description: The openapi-merger is designed to merge several openapi files into one and present a unified swagger interface
 keywords:
   - IoT
 maintainers:
   - name: digicatapult  # Digital Catapult
     url: https://github.com/digicatapult/helm-charts
     email: opensource@digicatapult.org.uk
-name: wasp-open-api
+name: openapi-merger
 sources:
-  - https://github.com/digicatapult/wasp-open-api
-version: 1.2.1
+  - https://github.com/digicatapult/openapi-merger
+version: 1.0.0

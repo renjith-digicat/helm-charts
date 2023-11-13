@@ -1,3 +1,5 @@
+# DEPRECATED USE openapi-merger instead
+This chart will no longer be maintained and the majority of functionality has been moved to `openapi-merger` chart as it is more generic than just something used in the WASP ecosystem.
 # wasp-open-api
 
 The wasp-open-api is a component of the WASP (Wide-Area-Sensor-Platform), an IoT platform designed to normalise and consolidate data from multiple IoT data services into one place. The wasp-open-api service creates a merged OpenAPI spec from several microservices and hosts a Swagger interface. See [https://github.com/digicatapult/wasp-documentation](https://github.com/digicatapult/wasp-documentation) for details.

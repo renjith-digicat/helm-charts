@@ -1,0 +1,53 @@
+{{- $prepend  := .Values.prepend -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-config" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: openapi-merger
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  openapi-merge.yaml: |
+    inputs:
+    - inputFile: base.json
+    {{- range .Values.paths }}
+    - inputURL: {{ . }}
+    {{- if (not (empty $prepend)) }}
+      pathModification:
+        prepend: {{ $prepend  }}
+    {{- end }}
+    {{- end }}
+    output: {{ .Values.output }}
+  base.json: |
+    {
+      "openapi": "3.0.3",
+      "info": {
+        "title": {{ .Values.openApiTitle | quote }},
+        "version": "0.0.1"
+      },
+      "servers": [
+        {
+          "url": {{ .Values.baseUrl | quote }}
+        }
+      {{- if .Values.security }}
+      ],
+      "components": {
+        "securitySchemes": {
+          "BearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT"
+          }
+        }
+      },
+      "security": [{ "BearerAuth": [] }]
+      {{- else }}
+      ]
+      {{- end }}
+    }
