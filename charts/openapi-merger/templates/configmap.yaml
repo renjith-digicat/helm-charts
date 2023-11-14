@@ -34,7 +34,7 @@ data:
       "servers": [
         {{- range $index, $element := .Values.baseUrl }}
         {
-        {{- $element | toJson |nindent 8 }}
+        "url": {{ $element | toJson }}
         }{{- if ne $index (sub (len $.Values.baseUrl) 1) }},{{- end }}
         {{- end }}
       {{- if .Values.security }}
