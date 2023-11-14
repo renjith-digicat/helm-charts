@@ -79,7 +79,8 @@ paths:
 output: output/output.swagger.json
 ## @param baseUrl The base URL of the API
 ##
-baseUrl: http://localhost:3000/api
+baseUrl:
+  - http://localhost:3000/api
 ## @param apiDocsFilePath The path to the API docs file
 ##
 apiDocsFilePath: /data/api-docs.json
@@ -110,7 +111,7 @@ security: true
 image:
   registry: docker.io
   repository: digicatapult/openapi-merger
-  tag: v1.0.19
+  tag: v1.0.20
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

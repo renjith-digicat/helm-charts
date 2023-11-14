@@ -32,9 +32,11 @@ data:
         "version": "0.0.1"
       },
       "servers": [
+        {{- range $index, $element := .Values.baseUrl }}
         {
-          "url": {{ .Values.baseUrl | quote }}
-        }
+        {{- $element | toJson |nindent 8 }}
+        }{{- if ne $index (sub (len $.Values.baseUrl) 1) }},{{- end }}
+        {{- end }}
       {{- if .Values.security }}
       ],
       "components": {
