@@ -84,7 +84,7 @@ spec:
                 - sh
                 - -c 
                 - |
-                  curl -X POST -H "Content-Type: application/json" -d @/etc/openapi-merge-cli/output/output.swagger.json http://$HOST:$PORT/set-api-docs
+                  curl -f -X POST -H "Content-Type: application/json" -d @/etc/openapi-merge-cli/output/output.swagger.json http://$HOST:$PORT/set-api-docs
               {{- end }}
               env:
                 - name: DEBUG
