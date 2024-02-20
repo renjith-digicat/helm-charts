@@ -1,9 +1,9 @@
 dependencies:
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 2.16.0
-- name: dscp-node
+  version: 2.16.1
+- name: sqnc-node
   repository: https://digicatapult.github.io/helm-charts/
-  version: 5.0.0
-digest: sha256:f0702e4dba863b3f6e26f129d8a4ae1bbf72304b30fcf237c1045a12be946594
-generated: "2024-02-16T17:46:26.137772Z"
+  version: 7.0.0
+digest: sha256:a6478a41668198e4c50ebb89fd4db5269bdb350efc1b19663a7b0cc4a667add6
+generated: "2024-02-20T15:24:47.822468Z"

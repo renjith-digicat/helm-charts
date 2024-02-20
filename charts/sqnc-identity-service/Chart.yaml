@@ -8,18 +8,18 @@ dependencies:
   - condition: postgresql.enabled
     name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 12.x.x
+    version: 14.x.x
   - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
       - bitnami-common
     version: 2.x.x
-  - name: dscp-node
+  - name: sqnc-node
     alias: node
     repository: https://digicatapult.github.io/helm-charts/
     tags:
-      - dscp-node
-    version: 5.x.x
+      - sqnc-node
+    version: 7.x.x
     condition: node.enabled
 description: The sqnc-identity-service is a component of the Sequence (SQNC) ledger-based system.
 home: https://github.com/digicatapult/sqnc-documentation
@@ -33,4 +33,4 @@ maintainers:
 name: sqnc-identity-service
 sources:
   - https://github.com/digicatapult/sqnc-identity-service
-version: 3.0.0
+version: 3.0.1
