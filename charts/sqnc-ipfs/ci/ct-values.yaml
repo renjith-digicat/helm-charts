@@ -1,0 +1,12 @@
+sqncNode:
+  enabled: true
+  node:
+    chain: dev
+    flags:
+    - "--rpc-external"
+    - "--alice"
+    - "--ws-external"
+    - "--rpc-methods=Unsafe"
+    - "--rpc-cors=all"
+    - "--unsafe-ws-external"
+    - "--unsafe-rpc-external"

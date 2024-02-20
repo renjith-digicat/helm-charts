@@ -1,0 +1,11 @@
+apiVersion: v2
+name: sqnc-node
+maintainers:
+  - name: digicatapult
+    email: opensource@digicatapult.org.uk
+    url: www.digicatapult.org.uk
+description: A Helm chart to deploy SQNC nodes
+type: application
+version: 7.0.0
+# renovate: image=digicatapult/sqnc-node
+appVersion: '9.0.0'
