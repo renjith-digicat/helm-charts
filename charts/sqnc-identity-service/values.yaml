@@ -66,9 +66,6 @@ diagnosticMode:
 ## @param logLevel Allowed values: error, warn, info, debug
 ##
 logLevel: "info"
-## @param apiVersion Override api version presented by the service's OpenAPI specification
-##
-apiVersion: ""
 ## @param externalOrigin The external domain name this service is hosted on
 ##
 externalOrigin: ""
@@ -105,7 +102,7 @@ authIssuer: ""
 image:
   registry: docker.io
   repository: digicatapult/sqnc-identity-service
-  tag: v1.10.1
+  tag: v1.11.0
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

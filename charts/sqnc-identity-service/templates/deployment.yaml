@@ -159,8 +159,6 @@ spec:
               value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
             - name: PORT
               value: {{ .Values.containerPorts.http | quote }}
-            - name: API_VERSION
-              value: {{ .Values.apiVersion }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel }}
             - name: SELF_ADDRESS

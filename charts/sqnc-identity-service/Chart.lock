@@ -1,12 +1,12 @@
 dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 14.1.3
+  version: 14.2.3
 - name: common
   repository: https://charts.bitnami.com/bitnami
   version: 2.16.1
 - name: sqnc-node
   repository: https://digicatapult.github.io/helm-charts/
   version: 7.0.0
-digest: sha256:842f637163c2fce4f9ed92db3bd2b3e1ddbd57f3e0782a9db564b4bb1af4d0e5
-generated: "2024-02-20T15:23:52.750096Z"
+digest: sha256:f50fc1c43b14ab1ba44b12fbe9e3737ad585ea848747c7da912f3df9896fd2c7
+generated: "2024-02-28T09:52:44.059651Z"
