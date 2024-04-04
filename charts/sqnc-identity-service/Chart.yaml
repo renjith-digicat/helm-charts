@@ -27,10 +27,10 @@ icon: https://raw.githubusercontent.com/digicatapult/sqnc-documentation/main/ass
 keywords:
   - SQNC
 maintainers:
-  - name: digicatapult  # Digital Catapult
+  - name: digicatapult # Digital Catapult
     url: https://github.com/digicatapult/helm-charts
     email: opensource@digicatapult.org.uk
 name: sqnc-identity-service
 sources:
   - https://github.com/digicatapult/sqnc-identity-service
-version: 3.1.0
+version: 3.1.1
