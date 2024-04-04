@@ -88,7 +88,6 @@ authAudience: ""
 ##
 authIssuer: ""
 
-
 ## Digital Catapult sqnc-identity-service image
 ## ref: https://hub.docker.com/r/digicatapult/sqnc-identity-service/tags/
 ## @param image.registry sqnc-identity-service image registry
@@ -445,6 +444,8 @@ ingress:
   ##     pathType: Prefix
   paths:
     - path: /v1/members
+      pathType: Prefix
+    - path: /v1/self
       pathType: Prefix
   ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
   ## Use this parameter to set the required annotations for cert-manager, see
