@@ -2,7 +2,7 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/openapi-merger
-appVersion: 1.0.26
+appVersion: 1.0.69
 dependencies:
   - condition: apiDocsMock.enabled
     name: nginx
