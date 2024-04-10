@@ -84,6 +84,9 @@ baseUrl:
 ## @param apiDocsFilePath The path to the API docs file
 ##
 apiDocsFilePath: /data/api-docs.json
+## @param apiDocsUrlPath The url for the API docs file
+##
+apiDocsUrlPath: /api-docs
 ## @param prepend what to prepend to the pathModification in the merged OpenAPI spec
 ##
 prepend: ""

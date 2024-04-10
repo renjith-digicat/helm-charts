@@ -98,6 +98,10 @@ spec:
             - name: API_DOCS_FILE_PATH
               value: {{ .Values.apiDocsFilePath }}
             {{- end }}
+            {{- if .Values.apiDocsUrlPath }}
+            - name: API_DOCS_URL_PATH
+              value: {{ .Values.apiDocsUrlPath }}
+            {{- end }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
