@@ -3,7 +3,7 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/sqnc-identity-service
-appVersion: v1.11.11
+appVersion: v1.11.15
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
@@ -33,4 +33,4 @@ maintainers:
 name: sqnc-identity-service
 sources:
   - https://github.com/digicatapult/sqnc-identity-service
-version: 3.1.1
+version: 3.1.2
