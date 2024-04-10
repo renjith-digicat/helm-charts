@@ -84,9 +84,9 @@ baseUrl:
 ## @param apiDocsFilePath The path to the API docs file
 ##
 apiDocsFilePath: /data/api-docs.json
-## @param apiDocsUrlPath The url for the API docs file
+## @param apiPublicUrlPrefix The public url prefix to prepend for accessing docs
 ##
-apiDocsUrlPath: /api-docs
+apiPublicUrlPrefix: ""
 ## @param prepend what to prepend to the pathModification in the merged OpenAPI spec
 ##
 prepend: ""
@@ -114,7 +114,7 @@ security: true
 image:
   registry: docker.io
   repository: digicatapult/openapi-merger
-  tag: v1.0.70
+  tag: v1.0.71
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
