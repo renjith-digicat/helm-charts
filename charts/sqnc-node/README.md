@@ -82,7 +82,7 @@ helm install kusama-node parity/node --set node.chainDataSnapshotUrl=https://ksm
 | Parameter                          | Description                                                                                            | Default             |
 |------------------------------------|--------------------------------------------------------------------------------------------------------|---------------------|
 | `image.repository`                 | Node image name                                                                                        | `parity/polkadot`   |
-| `image.tag`                        | Node image tag                                                                                         | `v11.0.0`           |
+| `image.tag`                        | Node image tag                                                                                         | `v11.3.0`           |
 | `image.pullPolicy`                 | Node image pull policy                                                                                 | `Always`            |
 | `initContainer.image.repository`   | Download-chain-snapshot init container image name                                                      | `crazymax/7zip`     |
 | `initContainer.image.tag`          | Download-chain-snapshot init container image tag                                                       | `latest`            |
