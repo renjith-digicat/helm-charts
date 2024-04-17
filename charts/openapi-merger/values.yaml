@@ -97,9 +97,21 @@ openApiTitle: "Merged OpenAPI spec"
 ##
 apiDocsMock:
   enabled: false
-## @param security Enable JWT Bearer security configuration in the merged OpenAPI spec
-##
-security: true
+## @param security.type Options are ["bearer", "oauth2", ""] to enable security configuration in the merged OpenAPI spec
+## @param security.oauth2.authorizationUrl The URL for the oauth2 authorization
+## @param security.oauth2.tokenUrl The URL for the oauth2 token
+## @extra security.oauth2.scopes [object] Scopes for the oauth2 token
+## @skip security.oauth2.scopes.users:example
+## ref: https://swagger.io/docs/specification/authentication/oauth2/
+security:
+  type: ""
+  oauth2:
+    authorizationUrl: "/auth/realms/simple/protocol/openid-connect/auth"
+    tokenUrl: "/auth/realms/simple/protocol/openid-connect/token"
+    scopes: {
+      "users:example": "example"
+    }
+
 
 ## Digital Catapult openapi-merger image
 ## ref: https://hub.docker.com/r/digicatapult/openapi-merger/tags/
@@ -114,7 +126,7 @@ security: true
 image:
   registry: docker.io
   repository: digicatapult/openapi-merger
-  tag: v1.0.71
+  tag: v1.0.72
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

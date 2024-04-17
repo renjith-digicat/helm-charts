@@ -37,7 +37,7 @@ data:
         "url": {{ $element | toJson }}
         }{{- if ne $index (sub (len $.Values.baseUrl) 1) }},{{- end }}
         {{- end }}
-      {{- if .Values.security }}
+      {{- if eq .Values.security.type "bearer" }}
       ],
       "components": {
         "securitySchemes": {
@@ -49,6 +49,23 @@ data:
         }
       },
       "security": [{ "BearerAuth": [] }]
+      {{- else if eq .Values.security.type "oauth2" }}
+      ],
+      "components": {
+        "securitySchemes": {
+          "oAuth2AuthCode": {
+            "type": "oauth2",
+            "flows": {
+                "authorizationCode": {
+                  "authorizationUrl": {{ .Values.security.oauth2.authorizationUrl | quote }},
+                  "tokenUrl": {{ .Values.security.oauth2.tokenUrl | quote }},
+                  "scopes": {{ .Values.security.oauth2.scopes | toJson | default "{}" }}
+              }
+            }
+          }
+        }
+      },
+      "security": [{ "oAuth2AuthCode": [] }]
       {{- else }}
       ]
       {{- end }}
