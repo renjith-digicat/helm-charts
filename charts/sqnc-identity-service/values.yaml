@@ -75,18 +75,6 @@ externalPathPrefix: ""
 ## @param selfAddress The SS58 address for this services owner
 ##
 selfAddress: ""
-## @param authType Allowed values: JWT, NONE, EXTERNAL
-##
-authType: "NONE"
-## @param authJwksUri The URI of the JWKS endpoint for the JWT auth provider
-##
-authJwksUri: ""
-## @param authAudience The audience for the JWT auth provider
-##
-authAudience: ""
-## @param authIssuer The issuer for the JWT auth provider
-##
-authIssuer: ""
 
 ## Digital Catapult sqnc-identity-service image
 ## ref: https://hub.docker.com/r/digicatapult/sqnc-identity-service/tags/
@@ -101,7 +89,7 @@ authIssuer: ""
 image:
   registry: docker.io
   repository: digicatapult/sqnc-identity-service
-  tag: v1.11.15
+  tag: v1.12.0
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

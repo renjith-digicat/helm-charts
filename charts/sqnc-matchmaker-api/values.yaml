@@ -87,7 +87,7 @@ enableIndexer: true
 image:
   registry: docker.io
   repository: digicatapult/sqnc-matchmaker-api
-  tag: v2.2.4
+  tag: v2.3.0
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

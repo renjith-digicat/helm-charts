@@ -180,16 +180,6 @@ spec:
               value: {{ include "sqnc-identity-service.sqncNodeHost" . }}
             - name: API_PORT
               value: {{ include "sqnc-identity-service.sqncNodePort" . }}
-            - name: AUTH_TYPE
-              value: {{ .Values.authType }}
-            {{- if or (eq .Values.authType "jwt") (eq .Values.authType "JWT") }}
-            - name: AUTH_JWKS_URI
-              value: {{ .Values.authJwksUri }}
-            - name: AUTH_AUDIENCE
-              value: {{ .Values.authAudience }}
-            - name: AUTH_ISSUER
-              value: {{ .Values.authIssuer }}
-            {{- end }}
             {{ if .Values.externalOrigin }}
             - name: EXTERNAL_ORIGIN
               value: {{ .Values.externalOrigin }}
