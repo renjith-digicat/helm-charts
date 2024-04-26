@@ -156,11 +156,7 @@ securitySchema:
 ##     type: "bearer"
 ##     bearer:
 ##       format: "JWT"
-extraSecuritySchemas:
-  - name: oauth3
-    type: bearer
-    bearer:
-      format: JWT
+extraSecuritySchemas: []
 
 ## Digital Catapult openapi-merger image
 ## ref: https://hub.docker.com/r/digicatapult/openapi-merger/tags/

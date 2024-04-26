@@ -29,4 +29,4 @@ maintainers:
 name: openapi-merger
 sources:
   - https://github.com/digicatapult/openapi-merger
-version: 2.1.0
+version: 2.1.1
