@@ -93,25 +93,74 @@ prepend: ""
 ## @param openApiTitle The title of the merged OpenAPI spec
 ##
 openApiTitle: "Merged OpenAPI spec"
+## @param oauthClientId Oauth2 client-id to preconfigure the swagger UI with
+##
+oauthClientId: ""
+## @param oauthAppName App name to display during oauth2 authentication
+##
+oauthAppName: ""
+## @param oauthUsePkce Enables proof-key-for-code-exchange when performing oauth2 authentication
+##
+oauthUsePkce: true
+
 ## @param apiDocsMock.enabled Enable API docs mock
 ##
 apiDocsMock:
   enabled: false
-## @param security.type Options are ["bearer", "oauth2", ""] to enable security configuration in the merged OpenAPI spec
-## @param security.oauth2.authorizationUrl The URL for the oauth2 authorization
-## @param security.oauth2.tokenUrl The URL for the oauth2 token
-## @extra security.oauth2.scopes [object] Scopes for the oauth2 token
-## @skip security.oauth2.scopes.users:example
+
+## @param securitySchema.name Name of the security schema as referenced in the merged OpenAPI spec
+## @param securitySchema.type Options are ["bearer", "oauth2", ""] to enable security configuration in the merged OpenAPI spec
+## @param securitySchema.enabled Enable security configuration in the merged OpenAPI spec
+## @extra securitySchema.oauth2 [object] Oauth2 configuration. Required if type is "oauth2"
+## @skip securitySchema.oauth2
+## @param securitySchema.oauth2.flows [nullable] Supported OAuth2 flows. Allowed values are ["authorizationCode", "clientCredentials", "implicit", "password"]
+## @param securitySchema.oauth2.authorizationUrl [nullable] The URL for the oauth2 authorization. Required if type is oauth2 and either "authorizationCode" or "implicit" is included in flows
+## @param securitySchema.oauth2.tokenUrl [nullable] The URL for the oauth2 token. Required if type is oauth2 and any of "authorizationCode", "password" or "clientCredentials" are included in flows
+## @param securitySchema.oauth2.refreshUrl [nullable] The refresh URL for the oauth2 token
+## @extra securitySchema.oauth2.scopes [object] Scopes for the oauth2 token
+## @skip securitySchema.oauth2.scopes
+## @extra securitySchema.bearer [object] Bearer format configuration. Required if type is "bearer"
+## @skip securitySchema.bearer
+## @param securitySchema.bearer.format [nullable] Bearer token format
 ## ref: https://swagger.io/docs/specification/authentication/oauth2/
-security:
-  type: ""
+securitySchema:
+  name: "oauth2"
+  type: "oauth2"
+  enabled: false
   oauth2:
+    flows:
+      - authorizationCode
+      - clientCredentials
     authorizationUrl: "/auth/realms/simple/protocol/openid-connect/auth"
     tokenUrl: "/auth/realms/simple/protocol/openid-connect/token"
+    refreshUrl: "/auth/realms/simple/protocol/openid-connect/token"
     scopes: {
       "users:example": "example"
     }
+  bearer:
+    format: "JWT"
 
+## @param extraSecuritySchemas [array] Additional security schemas to be referenced in the merged OpenAPI spec
+## e.g.
+## extraSecuritySchemas:
+##   - name: "OtherOAuth2"
+##     type: "oauth2"
+##     oauth2:
+##       authorizationUrl: "/auth/realms/simple/protocol/openid-connect/auth"
+##       tokenUrl: "/auth/realms/simple/protocol/openid-connect/token"
+##       refreshUrl: "/auth/realms/simple/protocol/openid-connect/token"
+##       scopes: {
+##         "users:example": "example"
+##       }
+##   - name: "BearerAuth"
+##     type: "bearer"
+##     bearer:
+##       format: "JWT"
+extraSecuritySchemas:
+  - name: oauth3
+    type: bearer
+    bearer:
+      format: JWT
 
 ## Digital Catapult openapi-merger image
 ## ref: https://hub.docker.com/r/digicatapult/openapi-merger/tags/
@@ -126,7 +175,7 @@ security:
 image:
   registry: docker.io
   repository: digicatapult/openapi-merger
-  tag: v1.0.72
+  tag: v1.1.0
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

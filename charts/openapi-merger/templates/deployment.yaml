@@ -99,8 +99,20 @@ spec:
               value: {{ .Values.apiDocsFilePath }}
             {{- end }}
             {{- if .Values.apiPublicUrlPrefix }}
-            - name: API_PUBLIC_URL_PREFIX 
+            - name: API_PUBLIC_URL_PREFIX
               value: {{ .Values.apiPublicUrlPrefix }}
+            {{- end }}
+            {{- if .Values.oauthClientId }}
+            - name: OAUTH_CLIENT_ID
+              value: {{ .Values.oauthClientId }}
+            {{- end }}
+            {{- if .Values.oauthAppName }}
+            - name: OAUTH_APP_NAME
+              value: {{ .Values.oauthAppName }}
+            {{- end }}
+            {{- if .Values.oauthUsePkce }}
+            - name: OAUTH_USE_PKCE
+              value: {{ .Values.oauthUsePkce | quote }}
             {{- end }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
