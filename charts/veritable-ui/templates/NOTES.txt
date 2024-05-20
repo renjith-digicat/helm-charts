@@ -24,7 +24,7 @@ In order to replicate the container startup scripts execute this command:
 
 {{- else }}
 
-1. Get a sqnc-matchmaker-api URL by running these commands:
+1. Get a veritable-ui URL by running these commands:
 
 {{- if contains "LoadBalancer" .Values.service.type }}
 
@@ -43,11 +43,11 @@ In order to replicate the container startup scripts execute this command:
 
 {{- end }}
 
-2. Access sqnc-matchmaker-api using the obtained URL. For example for the ClusterIP url http://127.0.0.1:3000:
+2. Access veritable-ui using the obtained URL. For example for the ClusterIP url http://127.0.0.1:3000:
 
 curl http://127.0.0.1:3000/health
 
 {{- end }}
 
 {{- include "common.warnings.rollingTag" .Values.image }}
-{{- include "sqnc-matchmaker-api.validateValues" . }}
+{{- include "veritable-ui.validateValues" . }}
