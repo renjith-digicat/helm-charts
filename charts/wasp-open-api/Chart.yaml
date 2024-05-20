@@ -20,16 +20,13 @@ dependencies:
     tags:
       - bitnami-common
     version: 2.x.x
+deprecated: true
 description: The wasp-open-api is a component of the WASP (Wide-Area-Sensor-Platform), an IoT platform designed to normalise and consolidate data from multiple IoT data services into one place.
 home: https://github.com/digicatapult/wasp-documentation
 icon: https://raw.githubusercontent.com/digicatapult/wasp-documentation/main/assets/icon.png
 keywords:
   - IoT
-maintainers:
-  - name: digicatapult  # Digital Catapult
-    url: https://github.com/digicatapult/helm-charts
-    email: opensource@digicatapult.org.uk
 name: wasp-open-api
 sources:
   - https://github.com/digicatapult/wasp-open-api
-version: 1.2.1
+version: 1.2.2

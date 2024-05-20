@@ -14,16 +14,13 @@ dependencies:
     tags:
       - bitnami-common
     version: 2.x.x
+deprecated: true
 description: The wasp-thing-service is a component of the WASP (Wide-Area-Sensor-Platform), an IoT platform designed to normalise and consolidate data from multiple IoT data services into one place.
 home: https://github.com/digicatapult/wasp-documentation
 icon: https://raw.githubusercontent.com/digicatapult/wasp-documentation/main/assets/icon.png
 keywords:
   - IoT
-maintainers:
-  - name: digicatapult  # Digital Catapult
-    url: https://github.com/digicatapult/helm-charts
-    email: opensource@digicatapult.org.uk
 name: wasp-thing-service
 sources:
   - https://github.com/digicatapult/wasp-thing-service
-version: 1.0.2
+version: 1.0.3
