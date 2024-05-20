@@ -1,0 +1,30 @@
+annotations:
+  category: veritable 
+  licenses: Apache-2.0
+apiVersion: v2
+# enovate: image=digicatapult/veritable-ui - TODO double check
+appVersion: v0.3.0
+dependencies:
+  - condition: postgresql.enabled
+    name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 14.x.x
+  # TODO check bitnami common
+  - name: common 
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 2.x.x
+description: The veritable user interface for managing certificates
+home: https://github.com/digicatapult/veritable-ui
+icon: https://raw.githubusercontent.com/digicatapult/sqnc-documentation/main/assets/icon.png
+keywords:
+  - VERITABLE
+maintainers:
+  - name: digicatapult  # Digital Catapult
+    url: https://github.com/digicatapult/helm-charts
+    email: opensource@digicatapult.org.uk
+name: veritable-ui
+sources:
+  - https://github.com/digicatapult/veritable-ui
+version: 1.0.0
