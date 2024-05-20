@@ -57,8 +57,6 @@ jobs:
 
     - name: Create kind cluster
       uses: helm/kind-action@v1
-      with:
-        node_image: kindest/node:v1.21.10
       if: steps.list-changed.outputs.changed == 'true'
 
     - name: Run chart-testing (install)

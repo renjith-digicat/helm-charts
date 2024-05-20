@@ -1,0 +1,309 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: veritable-cloudagent
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- if .Values.updateStrategy }}
+  strategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: veritable-cloudagent
+  template:
+    metadata:
+      {{- if .Values.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: veritable-cloudagent
+        {{- if .Values.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "veritable-cloudagent.serviceAccountName" . }}
+      {{- include "veritable-cloudagent.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "veritable-cloudagent" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "veritable-cloudagent" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- if or .Values.initContainers (and (not .Values.postgresql.enabled) .Values.externalDatabase.create) }}
+      initContainers:
+        {{- if and (not .Values.postgresql.enabled) .Values.externalDatabase.create }}
+        - name: database-create
+          image: {{ template "veritable-cloudagent.initDbCreate.image" . }}
+          imagePullPolicy: {{ .Values.initDbCreate.image.pullPolicy }}
+          env:
+            - name: DB_HOST
+              value: {{ template "veritable-cloudagent.databaseHost" . }}
+            - name: DB_PORT
+              value: {{ template "veritable-cloudagent.databasePort" . }}
+            - name: DB_NAME
+              value: {{ template "veritable-cloudagent.databaseName" . }}
+            - name: DB_USERNAME
+              value: {{ template "veritable-cloudagent.databaseUser" . }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-cloudagent.databaseSecretName" . }}
+                  key: {{ include "veritable-cloudagent.databaseSecretPasswordKey" . }}
+            - name: DB_POSTGRES_USERNAME
+              value: {{ .Values.externalDatabase.postgresqlPostgresUser }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-cloudagent.databaseSecretName" . }}
+                  key: {{ include "veritable-cloudagent.databaseSecretPostgresPasswordKey" . }}
+          command:
+            - '/bin/sh'
+            - '-c'
+            - |
+              CONN_FLAGS="-h $DB_HOST -p $DB_PORT -U $DB_POSTGRES_USERNAME";
+              if [ "$( psql $CONN_FLAGS -tAc "SELECT 1 FROM pg_database WHERE datname=\$\$$DB_NAME\$\$" )" = '1' ]
+              then
+                echo "Database already exists doing nothing";
+                exit 0;
+              fi;
+              createuser $CONN_FLAGS $DB_USERNAME;
+              PSQL_ESC=$(echo $DB_PASSWORD | sed 's/./_/g');
+              psql $CONN_FLAGS -c "ALTER ROLE $DB_USERNAME WITH PASSWORD \$$$PSQL_ESC\$$$DB_PASSWORD\$$$PSQL_ESC\$";
+              createdb $CONN_FLAGS -O $DB_USERNAME $DB_NAME;
+        {{- end }}
+        {{- if .Values.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: veritable-cloudagent
+          image: {{ template "veritable-cloudagent.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: VERITABLE_DEBUG
+              value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: AFJ_REST_INBOUND_TRANSPORTS
+              value: "http {{ .Values.containerPorts.http }} ws {{ .Values.containerPorts.ws }}"
+            - name: AFJ_REST_LABEL
+              value: {{ .Values.label | quote }}
+            - name: AFJ_REST_WALLET_ID
+              value: {{ .Values.walletId | quote }}
+            - name: AFJ_REST_WALLET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-cloudagent.walletSecretName" . }}
+                  key: {{ include "veritable-cloudagent.walletSecretKey" . }}
+            - name: AFJ_REST_STORAGE_TYPE
+              value: {{ .Values.storageType | quote }}
+            - name: AFJ_REST_ENDPOINT
+              value: {{ .Values.endpoint | quote }}
+            - name: AFJ_REST_LOG_LEVEL
+              value: {{ .Values.logLevel | quote }}
+            - name: AFJ_REST_USE_DID_SOV_PREFIX_WHERE_ALLOWED
+              value: {{ .Values.useDidSovPrefixWhereAllowed | quote }}
+            - name: AFJ_REST_USE_DID_KEY_IN_PROTOCOLS
+              value: {{ .Values.useDidKeyInProtocols | quote }}
+            - name: AFJ_REST_OUTBOUND_TRANSPORT
+              value: {{ .Values.outboundTransport | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_CONNECTIONS
+              value: {{ .Values.autoAcceptConnections | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_CREDENTIALS
+              value: {{ .Values.autoAcceptCredentials | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_MEDIATION_REQUESTS
+              value: {{ .Values.autoAcceptMediationRequests | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_PROOFS
+              value: {{ .Values.autoAcceptProofs | quote }}
+            - name: AFJ_REST_AUTO_UPDATE_STORAGE_ON_STARTUP
+              value: {{ .Values.autoUpdateStorageOnStartup | quote }}
+            - name: AFJ_REST_BACKUP_BEFORE_STORAGE_UPDATE
+              value: {{ .Values.backupBeforeStorageUpdate | quote }}
+            {{- if .Values.connectionImageUrl }}
+            - name: AFJ_REST_CONNECTION_IMAGE_URL
+              value: {{ .Values.connectionImageUrl | quote }}
+            {{- end }}
+            {{- if .Values.webhookUrl }}
+            - name: AFJ_REST_WEBHOOK_URL
+              value: {{ .Values.webhookUrl | quote }}
+            {{- end }}
+            - name: AFJ_REST_ADMIN_PORT
+              value: {{ .Values.adminPort | quote }}
+            - name: AFJ_REST_IPFS_ORIGIN
+            {{- if .Values.ipfs.enabled }}
+              value: "http://localhost:{{ .Values.ipfs.containerPorts.api }}"
+            {{- else }}
+              value: {{ .Values.ipfsExternalOrigin | quote }}
+            {{- end }}
+            {{- if eq .Values.storageType "postgres" }}
+            - name: AFJ_REST_POSTGRES_HOST
+              value: {{ template "veritable-cloudagent.databaseHost" . }}
+            - name: AFJ_REST_POSTGRES_PORT
+              value: {{ template "veritable-cloudagent.databasePort" . }}
+            - name: AFJ_REST_POSTGRES_USERNAME
+              value: {{ template "veritable-cloudagent.databaseUser" . }}
+            - name: AFJ_REST_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-cloudagent.databaseSecretName" . }}
+                  key: {{ include "veritable-cloudagent.databaseSecretPasswordKey" . }}
+            {{- end }}
+            {{- if .Values.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.containerPorts.http }}
+            - name: ws
+              containerPort: {{ .Values.containerPorts.ws }}
+            - name: admin
+              containerPort: {{ .Values.containerPorts.admin }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.livenessProbe "enabled" "path") "context" $) | nindent 12 }}
+            httpGet:
+              path: {{ .Values.livenessProbe.path }}
+              port: admin
+          {{- end }}
+          {{- if .Values.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.readinessProbe "enabled" "path") "context" $) | nindent 12 }}
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: admin
+          {{- end }}
+          {{- if .Values.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled" "path") "context" $) | nindent 12 }}
+            httpGet:
+              path: {{ .Values.startupProbe.path }}
+              port: admin
+          {{- end }}
+          {{- end }}
+          {{- if .Values.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if eq .Values.ipfs.enabled true }}
+        - name: ipfs
+          image: {{ .Values.ipfs.image.registry }}/{{ .Values.ipfs.image.repository }}:{{ .Values.ipfs.image.tag }}
+          imagePullPolicy: {{ .Values.ipfs.image.pullPolicy }}
+          ports:
+            - name: api
+              containerPort: {{ .Values.ipfs.containerPorts.api }}
+          volumeMounts:
+            - name: ipfs-data
+              mountPath: /data/ipfs
+            {{- if .Values.ipfs.volumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.volumeMounts "context" $) | nindent 6 }}
+            {{- end }}
+          {{- if .Values.ipfs.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+              - ipfs
+              - version
+            initialDelaySeconds: {{ .Values.ipfs.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.ipfs.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.ipfs.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.ipfs.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.ipfs.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.ipfs.readinessProbe.enabled }}
+          readinessProbe:
+            tcpSocket:
+              port: api
+            initialDelaySeconds: {{ .Values.ipfs.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.ipfs.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.ipfs.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.ipfs.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.ipfs.readinessProbe.successThreshold }}
+          {{- end }}
+          env:
+            {{- if .Values.ipfs.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.extraEnvVars "context" $) | nindent 6 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.ipfs.resources | nindent 6 }}
+        {{- if .Values.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      volumes:
+        {{- if .Values.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if eq .Values.ipfs.enabled true }}
+        - name: ipfs-data
+          emptyDir: {}
+        {{- if .Values.ipfs.volumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.volumes "context" $) | nindent 4 }}
+        {{- end }}
+        {{- end }}
