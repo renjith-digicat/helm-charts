@@ -66,15 +66,22 @@ diagnosticMode:
 ## @param logLevel Allowed values: error, warn, info, debug
 ##
 logLevel: "info"
-## @param externalOrigin The external domain name this service is hosted on
-##
-externalOrigin: ""
-## @param externalPathPrefix The external path prefix this service is hosted on
-##
-externalPathPrefix: ""
 ## @param selfAddress The SS58 address for this services owner
 ##
 selfAddress: ""
+## Authentication IDP configuration
+## @param auth.clientId OAuth2 client id to use when requesting tokens
+## @param auth.publicUrlPrefix Internet accessible URL prefix for IDP routes
+## @param auth.internalUrlPrefix Cluster accessible URL prefix for IDP routes
+## @param auth.tokenPath Path segment to append to the appropriate prefix to determine OAuth2 token endpoint
+## @param auth.jwksPath Path segment to append to the appropriate prefix to determine JWKS certificate endpoint
+auth:
+  clientId: "sequence"
+  publicUrlPrefix: ""
+  internalUrlPrefix: ""
+  tokenPath: "/token"
+  jwksPath: "/certs"
+
 
 ## Digital Catapult sqnc-identity-service image
 ## ref: https://hub.docker.com/r/digicatapult/sqnc-identity-service/tags/
@@ -89,7 +96,7 @@ selfAddress: ""
 image:
   registry: docker.io
   repository: digicatapult/sqnc-identity-service
-  tag: v1.12.0
+  tag: v2.0.4
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

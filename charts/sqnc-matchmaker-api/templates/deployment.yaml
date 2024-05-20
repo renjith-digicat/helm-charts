@@ -190,6 +190,16 @@ spec:
               value: {{ .Values.externalSqncIdentity.port | quote }}
             - name: ENABLE_INDEXER
               value: {{ .Values.enableIndexer | quote }}
+            - name: IDP_CLIENT_ID
+              value: {{ .Values.auth.clientId }}
+            - name: IDP_PUBLIC_URL_PREFIX
+              value: {{ .Values.auth.publicUrlPrefix }}
+            - name: IDP_INTERNAL_URL_PREFIX
+              value: {{ .Values.auth.internalUrlPrefix }}
+            - name: IDP_TOKEN_PATH
+              value: {{ .Values.auth.tokenPath }}
+            - name: IDP_JWKS_PATH
+              value: {{ .Values.auth.jwksPath }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
