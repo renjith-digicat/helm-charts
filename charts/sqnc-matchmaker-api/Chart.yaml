@@ -8,7 +8,7 @@ dependencies:
   - condition: postgresql.enabled
     name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 14.x.x
+    version: 15.x
   - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
@@ -33,4 +33,4 @@ maintainers:
 name: sqnc-matchmaker-api
 sources:
   - https://github.com/digicatapult/sqnc-matchmaker-api
-version: 2.0.0
+version: 2.0.1

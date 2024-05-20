@@ -555,7 +555,7 @@ initDbCreate:
   image:
     registry: docker.io
     repository: postgres
-    tag: '15-alpine'
+    tag: '16-alpine'
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
