@@ -38,6 +38,13 @@ Return the Postgresql hostname
 {{- end -}}
 
 {{/*
+Return the company profile API key secret name
+*/}}
+{{- define "veritable-ui.companyHouseSecret" -}}
+{{- ternary (include "veritable-ui.companyHouse.fullname" .) .Values.companyHouse.secret .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
 Return the Postgresql port
 */}}
 {{- define "veritable-ui.databasePort" -}}

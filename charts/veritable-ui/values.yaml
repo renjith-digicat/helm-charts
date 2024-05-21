@@ -572,6 +572,15 @@ initDbMigrate:
 
 ## @section Other Parameters
 ##
+## @param companyHouse.url an external API from which company details can be retrieved
+## @param companyHouse.apiKey an API key
+## @param companyHouse.secret name of existing secret to use for company house API key
+
+companyHouse:
+  enabled: true
+  url: "https://api.company-information.service.gov.uk"
+  apiKey: ""
+  secret: ""
 
 ## ServiceAccount configuration
 ##
@@ -604,9 +613,9 @@ serviceAccount:
 postgresql:
   enabled: true
   auth:
-    username: matchmaker_service
+    username: veritable_service
     password: ""
-    database: matchmaker
+    database: veritable-ui
     existingSecret: ""
   architecture: standalone
 ## External PostgreSQL configuration
@@ -626,9 +635,9 @@ postgresql:
 externalDatabase:
   host: ""
   port: 5432
-  user: matchmaker_service
+  user: veritable_service
   password: ""
-  database: matchmaker
+  database: veritable-ui 
   create: true
   postgresqlPostgresUser: "postgres"
   postgresqlPostgresPassword: ""
@@ -671,3 +680,22 @@ externalSqncIdentity:
   ## @param externalSqncIdentity.port External SQNC-Identity-Service port
   ##
   port: ""
+
+
+## @section authentication configuration
+##
+## @param auth.idp.clientId IDP Client ID
+## @param auth.idp.publicURLPrefix public URL prefix
+## @param auth.idp.internalURLPrefix internal URL prefix
+## @param auth.idp.authPath IDP authentication path
+## @param auth.idp.tokenPath IDP token path
+## @param auth.idp.JWKSPath IDP JWKS path
+auth:
+  enabled: true
+  idp: 
+    clientId: "veritable-ui"
+    publicURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
+    internalURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
+    authPath: "/auth"
+    tokenPath: "/token"
+    JWKSPath: "/certs"

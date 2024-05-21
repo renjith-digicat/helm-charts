@@ -73,6 +73,25 @@ spec:
           image: {{ template "veritable-ui.initDbCreate.image" . }}
           imagePullPolicy: {{ .Values.initDbCreate.image.pullPolicy }}
           env:
+            - name: COMPANY_PROFILE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-ui.companyHouseSecret" . }}
+                  key: {{ include "veritable-ui.<TODO>" . }}
+            - name: IDP_CLIENT_ID
+              value: {{ template "veritable-ui.auth.idp.clientId" . }}
+            - name: IDP_PUBLIC_URL_PREFIX
+              value: {{ template "veritable-ui.auth.idp.publicURLPrefix" . }}
+            - name: IDP_INTERNAL_URL_PREFIX
+              value: {{ template "veritable-ui.auth.idp.internalURLPrefix" . }}
+            - name: IDP_AUTH_PATH
+              value: {{ template "veritable-ui.auth.idp.authPath" . }}
+            - name: IDP_TOKEN_PATH
+              value: {{ template "veritable-ui.auth.idp.tokenPath" . }}
+            - name: IDP_JWKS_PATH
+              value: {{ template "veritable-ui.auth.idp.JWKSPath" . }}
+            - name: COMPANY_HOUSE_API_URL
+              value: {{ template "veritable-ui.companyHouse.url" . }}
             - name: DB_HOST
               value: {{ template "veritable-ui.databaseHost" . }}
             - name: DB_PORT
@@ -93,6 +112,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "veritable-ui.databaseSecretName" . }}
                   key: {{ include "veritable-ui.databaseSecretPostgresPasswordKey" . }}
+
           command:
             - '/bin/sh'
             - '-c'
@@ -159,8 +179,6 @@ spec:
               value: {{ .Values.containerPorts.http | quote }}
             - name: LOG_LEVEL
               value: {{ .Values.logLevel }}
-            - name: SELF_ADDRESS
-              value: {{ .Values.selfAddress }}
             - name: DB_HOST
               value: {{ template "veritable-ui.databaseHost" . }}
             - name: DB_PORT
