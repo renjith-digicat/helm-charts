@@ -3,7 +3,7 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # enovate: image=digicatapult/veritable-ui - TODO double check
-appVersion: v0.3.0
+appVersion: v0.3.4
 dependencies:
   - condition: postgresql.enabled
     name: postgresql

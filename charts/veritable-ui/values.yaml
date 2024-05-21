@@ -60,20 +60,6 @@ diagnosticMode:
   args:
     - infinity
 
-## @section SQNC Identity Service config parameters
-##
-
-## @param logLevel Allowed values: error, warn, info, debug
-##
-logLevel: "info"
-## @param userUri The SS58 address for this services owner
-##
-userUri: "//Alice"
-## @param enableIndexer Enable the indexer
-##
-enableIndexer: true
-
-
 ## Digital Catapult veritable-ui image
 ## ref: https://hub.docker.com/r/digicatapult/veritable-ui/tags/
 ## @param image.registry veritable-ui image registry
@@ -87,7 +73,7 @@ enableIndexer: true
 image:
   registry: docker.io
   repository: digicatapult/veritable-ui
-  tag: v0.3.0
+  tag: v0.3.4
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -429,15 +415,9 @@ ingress:
   ##   - path: /
   ##     pathType: Prefix
   paths:
-    - path: /v1/attachment
+    - path: /connection
       pathType: Prefix
-    - path: /v1/demandA
-      pathType: Prefix
-    - path: /v1/demandB
-      pathType: Prefix
-    - path: /v1/match2
-      pathType: Prefix
-    - path: /v1/transaction
+    - path: /
       pathType: Prefix
   ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
   ## Use this parameter to set the required annotations for cert-manager, see
@@ -543,7 +523,7 @@ initDbCreate:
   image:
     registry: docker.io
     repository: postgres
-    tag: '15-alpine'
+    tag: '16-alpine'
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -572,15 +552,15 @@ initDbMigrate:
 
 ## @section Other Parameters
 ##
-## @param companyHouse.url an external API from which company details can be retrieved
-## @param companyHouse.apiKey an API key
-## @param companyHouse.secret name of existing secret to use for company house API key
+## @param companyHouseApiKey.url an external API from which company details can be retrieved
+## @param companyHouseApiKey.apiKey an API key
+## @param companyHouseApiKey.secret name of existing secret to use for company house API key
 
-companyHouse:
+companyHouseApiKey:
   enabled: true
-  url: "https://api.company-information.service.gov.uk"
-  apiKey: ""
-  secret: ""
+  secret: "companyHouseApiKey"
+  existingSecret: ""
+  existingSecretKey: ""
 
 ## ServiceAccount configuration
 ##
@@ -613,7 +593,7 @@ serviceAccount:
 postgresql:
   enabled: true
   auth:
-    username: veritable_service
+    username: veritable-ui
     password: ""
     database: veritable-ui
     existingSecret: ""
@@ -635,9 +615,9 @@ postgresql:
 externalDatabase:
   host: ""
   port: 5432
-  user: veritable_service
+  user: veritable-ui
   password: ""
-  database: veritable-ui 
+  database: veritable-ui
   create: true
   postgresqlPostgresUser: "postgres"
   postgresqlPostgresPassword: ""

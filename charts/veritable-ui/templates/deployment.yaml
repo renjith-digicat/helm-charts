@@ -157,23 +157,24 @@ spec:
           {{- end }}
           env:
             - name: IDP_CLIENT_ID
-              value: {{ template "veritable-ui.auth.idp.clientId" . }}
+              value: {{ .Values.auth.idp.clientId | quote }}
             - name: IDP_PUBLIC_URL_PREFIX
-              value: {{ template "veritable-ui.auth.idp.publicURLPrefix" . }}
+              value: {{ .Values.auth.idp.publicURLPrefix | quote }}
             - name: IDP_INTERNAL_URL_PREFIX
-              value: {{ template "veritable-ui.auth.idp.internalURLPrefix" . }}
+              value: {{ .Values.auth.idp.internalURLPrefix | quote }}
             - name: IDP_AUTH_PATH
-              value: {{ template "veritable-ui.auth.idp.authPath" . }}
+              value: {{ .Values.auth.idp.authPath | quote }}
             - name: IDP_TOKEN_PATH
-              value: {{ template "veritable-ui.auth.idp.tokenPath" . }}
+              value: {{ .Values.auth.idp.tokenPath | quote }}
             - name: IDP_JWKS_PATH
-              value: {{ template "veritable-ui.auth.idp.JWKSPath" . }}
+              value: {{ .Values.auth.idp.JWKSPath | quote }}
             - name: COMPANY_HOUSE_API_URL
-              value: {{ template "veritable-ui.companyHouse.url" . }}
+              value: {{ .Values.auth.idp.internalURLPrefix | quote }}
             - name: COMPANY_PROFILE_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "veritable-ui.companyHouseSecret" . }}
+                  name: {{ include "veritable-ui.companyHouseApiKeySecretName" . }}
+                  key: {{ include "veritable-ui.companyHouseApiKeySecretKey" . }}
             - name: PORT
               value: {{ .Values.containerPorts.http | quote }}
             - name: LOG_LEVEL
@@ -193,7 +194,6 @@ spec:
                   key: {{ include "veritable-ui.databaseSecretPasswordKey" . }}
             - name: EXTERNAL_ORIGIN
               value: {{ .Values.externalOrigin }}
-            {{ end }}
             {{ if .Values.externalPathPrefix }}
             - name: EXTERNAL_PATH_PREFIX
               value: {{ .Values.externalPathPrefix }}

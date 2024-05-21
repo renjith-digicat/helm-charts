@@ -40,8 +40,23 @@ Return the Postgresql hostname
 {{/*
 Return the company profile API key secret name
 */}}
-{{- define "veritable-ui.companyHouseSecret" -}}
-{{- ternary (include "veritable-ui.companyHouse.fullname" .) .Values.companyHouse.secret .Values.postgresql.enabled | quote -}}
+{{- define "veritable-ui.companyHouseApiKeySecretName" -}}
+{{- if .Values.companyHouseApiKey.secret -}}
+    {{- tpl .Values.companyHouseApiKey.secret $ -}}
+{{- else -}}
+    {{- include "veritable-ui.companyHouseApiKey.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure wallet secret key
+*/}}
+{{- define "veritable-ui.companyHouseApiKeySecretKey" -}}
+{{- if .Values.companyHouseApiKey.secretKey -}}
+    {{- printf "%s" .Values.walletKey.existingSecretKey -}}
+{{- else -}}
+    {{- print "secret" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
