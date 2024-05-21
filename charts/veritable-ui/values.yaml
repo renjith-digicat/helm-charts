@@ -552,10 +552,6 @@ initDbMigrate:
 
 ## @section Other Parameters
 ##
-## @param companyHouseApiKey.url an external API from which company details can be retrieved
-## @param companyHouseApiKey.apiKey an API key
-## @param companyHouseApiKey.secret name of existing secret to use for company house API key
-
 companyHouseApiKey:
   enabled: true
   secret: "companyHouseApiKey"
@@ -591,6 +587,7 @@ serviceAccount:
 ## @param postgresql.architecture PostgreSQL architecture (`standalone` or `replication`)
 ##
 postgresql:
+  fullName: "veritable-ui"
   enabled: true
   auth:
     username: veritable-ui

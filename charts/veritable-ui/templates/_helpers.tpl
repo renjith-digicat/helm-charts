@@ -12,12 +12,14 @@ Return the proper init container image name
 {{ include "common.images.image" (dict "imageRoot" .Values.initDbCreate.image "global" .Values.global) }}
 {{- end -}}
 
+
 {{/*
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "veritable-ui.imagePullSecrets" -}}
 {{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.initDbCreate.image ) "global" .Values.global) -}}
 {{- end -}}
+
 
 {{/*
 Create the name of the service account to use
@@ -31,11 +33,13 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
-Return the Postgresql hostname
+Create a default fully qualified app name for the company house.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "veritable-ui.databaseHost" -}}
-{{- ternary (include "veritable-ui.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled | quote -}}
+{{- define "veritable-ui.companyHouseApiKey.fullname" -}}
+{{- printf "%s-company-house-key" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-"  -}}
 {{- end -}}
+
 
 {{/*
 Return the company profile API key secret name
@@ -49,7 +53,7 @@ Return the company profile API key secret name
 {{- end -}}
 
 {{/*
-Add environment variables to configure wallet secret key
+Add environment variables to configure company house api secret key
 */}}
 {{- define "veritable-ui.companyHouseApiKeySecretKey" -}}
 {{- if .Values.companyHouseApiKey.secretKey -}}
@@ -58,6 +62,22 @@ Add environment variables to configure wallet secret key
     {{- print "secret" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "veritable-ui.postgresql.fullname" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "postgresql" "chartValues" .Values.postgresql "context" $) -}}
+{{- end -}}
+
+{{/*
+Return the Postgresql hostname
+*/}}
+{{- define "veritable-ui.databaseHost" -}}
+{{- ternary (include "veritable-ui.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
 
 {{/*
 Return the Postgresql port
