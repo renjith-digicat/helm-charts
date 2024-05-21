@@ -8,8 +8,7 @@ dependencies:
   - condition: postgresql.enabled
     name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 14.x.x
-  # TODO check bitnami common
+    version: 15.x.x
   - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
@@ -19,12 +18,12 @@ description: The veritable user interface for managing certificates
 home: https://github.com/digicatapult/veritable-ui
 icon: https://raw.githubusercontent.com/digicatapult/sqnc-documentation/main/assets/icon.png
 keywords:
-  - VERITABLE
+  - veritable
 maintainers:
   - name: digicatapult  # Digital Catapult
     url: https://github.com/digicatapult/helm-charts
     email: opensource@digicatapult.org.uk
-name: veritable-ui
+name: veritable-cloudagent
 sources:
   - https://github.com/digicatapult/veritable-ui
 version: 1.0.0
