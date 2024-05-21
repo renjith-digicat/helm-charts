@@ -3,12 +3,12 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/sqnc-identity-service
-appVersion: v1.12.0
+appVersion: v2.0.4
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 14.x.x
+    version: 15.x
   - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
@@ -33,4 +33,4 @@ maintainers:
 name: sqnc-identity-service
 sources:
   - https://github.com/digicatapult/sqnc-identity-service
-version: 3.1.3
+version: 4.0.1

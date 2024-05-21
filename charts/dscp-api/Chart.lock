@@ -1,9 +1,0 @@
-dependencies:
-- name: dscp-node
-  repository: https://digicatapult.github.io/helm-charts/
-  version: 4.5.6
-- name: dscp-ipfs
-  repository: https://digicatapult.github.io/helm-charts/
-  version: 3.0.6
-digest: sha256:bad2a41404eaa0cee99c73eacd736df016684496894f89d41c3e809ce4aa27ca
-generated: "2023-03-22T09:26:06.215267Z"

@@ -4,7 +4,7 @@ metadata:
   name: {{ template "common.names.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: sqnc-matchmaker-api
+    app.kubernetes.io/component: veritable-cloudagent
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -20,20 +20,20 @@ spec:
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: sqnc-matchmaker-api
+      app.kubernetes.io/component: veritable-cloudagent
   template:
     metadata:
       {{- if .Values.podAnnotations }}
       annotations: {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
       {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: sqnc-matchmaker-api
+        app.kubernetes.io/component: veritable-cloudagent
         {{- if .Values.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "sqnc-matchmaker-api.serviceAccountName" . }}
-      {{- include "sqnc-matchmaker-api.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ template "veritable-cloudagent.serviceAccountName" . }}
+      {{- include "veritable-cloudagent.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.hostAliases "context" $) | nindent 8 }}
       {{- end }}
@@ -41,8 +41,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "sqnc-matchmaker-api" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "sqnc-matchmaker-api" "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "veritable-cloudagent" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "veritable-cloudagent" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.nodeSelector }}
@@ -66,33 +66,33 @@ spec:
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
-      {{- if or .Values.initContainers .Values.initDbMigrate.enable (and (not .Values.postgresql.enabled) .Values.externalDatabase.create) }}
+      {{- if or .Values.initContainers (and (not .Values.postgresql.enabled) .Values.externalDatabase.create) }}
       initContainers:
         {{- if and (not .Values.postgresql.enabled) .Values.externalDatabase.create }}
         - name: database-create
-          image: {{ template "sqnc-matchmaker-api.initDbCreate.image" . }}
+          image: {{ template "veritable-cloudagent.initDbCreate.image" . }}
           imagePullPolicy: {{ .Values.initDbCreate.image.pullPolicy }}
           env:
             - name: DB_HOST
-              value: {{ template "sqnc-matchmaker-api.databaseHost" . }}
+              value: {{ template "veritable-cloudagent.databaseHost" . }}
             - name: DB_PORT
-              value: {{ template "sqnc-matchmaker-api.databasePort" . }}
+              value: {{ template "veritable-cloudagent.databasePort" . }}
             - name: DB_NAME
-              value: {{ template "sqnc-matchmaker-api.databaseName" . }}
+              value: {{ template "veritable-cloudagent.databaseName" . }}
             - name: DB_USERNAME
-              value: {{ template "sqnc-matchmaker-api.databaseUser" . }}
+              value: {{ template "veritable-cloudagent.databaseUser" . }}
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "sqnc-matchmaker-api.databaseSecretName" . }}
-                  key: {{ include "sqnc-matchmaker-api.databaseSecretPasswordKey" . }}
+                  name: {{ include "veritable-cloudagent.databaseSecretName" . }}
+                  key: {{ include "veritable-cloudagent.databaseSecretPasswordKey" . }}
             - name: DB_POSTGRES_USERNAME
               value: {{ .Values.externalDatabase.postgresqlPostgresUser }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "sqnc-matchmaker-api.databaseSecretName" . }}
-                  key: {{ include "sqnc-matchmaker-api.databaseSecretPostgresPasswordKey" . }}
+                  name: {{ include "veritable-cloudagent.databaseSecretName" . }}
+                  key: {{ include "veritable-cloudagent.databaseSecretPostgresPasswordKey" . }}
           command:
             - '/bin/sh'
             - '-c'
@@ -108,38 +108,13 @@ spec:
               psql $CONN_FLAGS -c "ALTER ROLE $DB_USERNAME WITH PASSWORD \$$$PSQL_ESC\$$$DB_PASSWORD\$$$PSQL_ESC\$";
               createdb $CONN_FLAGS -O $DB_USERNAME $DB_NAME;
         {{- end }}
-        {{- if .Values.initDbMigrate.enable }}
-        - name: database-migrate
-          image: {{ template "sqnc-matchmaker-api.image" . }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: ['npx', 'knex']
-          {{- if .Values.initDbMigrate.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.initDbMigrate.args "context" $) | nindent 12 }}
-          {{- end }}
-          env:
-            - name: NODE_ENV
-              value: {{ .Values.initDbMigrate.environment }}
-            - name: DB_HOST
-              value: {{ template "sqnc-matchmaker-api.databaseHost" . }}
-            - name: DB_PORT
-              value: {{ template "sqnc-matchmaker-api.databasePort" . }}
-            - name: DB_NAME
-              value: {{ template "sqnc-matchmaker-api.databaseName" . }}
-            - name: DB_USERNAME
-              value: {{ template "sqnc-matchmaker-api.databaseUser" . }}
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "sqnc-matchmaker-api.databaseSecretName" . }}
-                  key: {{ include "sqnc-matchmaker-api.databaseSecretPasswordKey" . }}
-        {{- end }}
         {{- if .Values.initContainers }}
           {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
       containers:
-        - name: sqnc-matchmaker-api
-          image: {{ template "sqnc-matchmaker-api.image" . }}
+        - name: veritable-cloudagent
+          image: {{ template "veritable-cloudagent.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -155,51 +130,72 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
           {{- end }}
           env:
-            - name: SQNC_DEBUG
+            - name: VERITABLE_DEBUG
               value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
-            - name: PORT
-              value: {{ .Values.containerPorts.http | quote }}
-            - name: LOG_LEVEL
-              value: {{ .Values.logLevel }}
-            - name: USER_URI
-              value: {{ .Values.userUri }}
-            - name: DB_HOST
-              value: {{ template "sqnc-matchmaker-api.databaseHost" . }}
-            - name: DB_PORT
-              value: {{ template "sqnc-matchmaker-api.databasePort" . }}
-            - name: DB_NAME
-              value: {{ template "sqnc-matchmaker-api.databaseName" . }}
-            - name: DB_USERNAME
-              value: {{ template "sqnc-matchmaker-api.databaseUser" . }}
-            - name: DB_PASSWORD
+            - name: AFJ_REST_INBOUND_TRANSPORTS
+              value: "http {{ .Values.containerPorts.http }} ws {{ .Values.containerPorts.ws }}"
+            - name: AFJ_REST_LABEL
+              value: {{ .Values.label | quote }}
+            - name: AFJ_REST_WALLET_ID
+              value: {{ .Values.walletId | quote }}
+            - name: AFJ_REST_WALLET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "sqnc-matchmaker-api.databaseSecretName" . }}
-                  key: {{ include "sqnc-matchmaker-api.databaseSecretPasswordKey" . }}
-            - name: NODE_HOST
-              value: {{ include "sqnc-matchmaker-api.sqncNodeHost" . }}
-            - name: NODE_PORT
-              value: {{ include "sqnc-matchmaker-api.sqncNodePort" . }}
-            - name: IPFS_HOST
-              value: {{ .Values.externalSqncIpfs.host | quote}}
-            - name: IPFS_PORT
-              value: {{ .Values.externalSqncIpfs.port | quote }}
-            - name: IDENTITY_SERVICE_HOST
-              value: {{ .Values.externalSqncIdentity.host | quote}}
-            - name: IDENTITY_SERVICE_PORT
-              value: {{ .Values.externalSqncIdentity.port | quote }}
-            - name: ENABLE_INDEXER
-              value: {{ .Values.enableIndexer | quote }}
-            - name: IDP_CLIENT_ID
-              value: {{ .Values.auth.clientId }}
-            - name: IDP_PUBLIC_URL_PREFIX
-              value: {{ .Values.auth.publicUrlPrefix }}
-            - name: IDP_INTERNAL_URL_PREFIX
-              value: {{ .Values.auth.internalUrlPrefix }}
-            - name: IDP_TOKEN_PATH
-              value: {{ .Values.auth.tokenPath }}
-            - name: IDP_JWKS_PATH
-              value: {{ .Values.auth.jwksPath }}
+                  name: {{ include "veritable-cloudagent.walletSecretName" . }}
+                  key: {{ include "veritable-cloudagent.walletSecretKey" . }}
+            - name: AFJ_REST_STORAGE_TYPE
+              value: {{ .Values.storageType | quote }}
+            - name: AFJ_REST_ENDPOINT
+              value: {{ .Values.endpoint | quote }}
+            - name: AFJ_REST_LOG_LEVEL
+              value: {{ .Values.logLevel | quote }}
+            - name: AFJ_REST_USE_DID_SOV_PREFIX_WHERE_ALLOWED
+              value: {{ .Values.useDidSovPrefixWhereAllowed | quote }}
+            - name: AFJ_REST_USE_DID_KEY_IN_PROTOCOLS
+              value: {{ .Values.useDidKeyInProtocols | quote }}
+            - name: AFJ_REST_OUTBOUND_TRANSPORT
+              value: {{ .Values.outboundTransport | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_CONNECTIONS
+              value: {{ .Values.autoAcceptConnections | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_CREDENTIALS
+              value: {{ .Values.autoAcceptCredentials | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_MEDIATION_REQUESTS
+              value: {{ .Values.autoAcceptMediationRequests | quote }}
+            - name: AFJ_REST_AUTO_ACCEPT_PROOFS
+              value: {{ .Values.autoAcceptProofs | quote }}
+            - name: AFJ_REST_AUTO_UPDATE_STORAGE_ON_STARTUP
+              value: {{ .Values.autoUpdateStorageOnStartup | quote }}
+            - name: AFJ_REST_BACKUP_BEFORE_STORAGE_UPDATE
+              value: {{ .Values.backupBeforeStorageUpdate | quote }}
+            {{- if .Values.connectionImageUrl }}
+            - name: AFJ_REST_CONNECTION_IMAGE_URL
+              value: {{ .Values.connectionImageUrl | quote }}
+            {{- end }}
+            {{- if .Values.webhookUrl }}
+            - name: AFJ_REST_WEBHOOK_URL
+              value: {{ .Values.webhookUrl | quote }}
+            {{- end }}
+            - name: AFJ_REST_ADMIN_PORT
+              value: {{ .Values.adminPort | quote }}
+            - name: AFJ_REST_IPFS_ORIGIN
+            {{- if .Values.ipfs.enabled }}
+              value: "http://localhost:{{ .Values.ipfs.containerPorts.api }}"
+            {{- else }}
+              value: {{ .Values.ipfsExternalOrigin | quote }}
+            {{- end }}
+            {{- if eq .Values.storageType "postgres" }}
+            - name: AFJ_REST_POSTGRES_HOST
+              value: {{ template "veritable-cloudagent.databaseHost" . }}
+            - name: AFJ_REST_POSTGRES_PORT
+              value: {{ template "veritable-cloudagent.databasePort" . }}
+            - name: AFJ_REST_POSTGRES_USERNAME
+              value: {{ template "veritable-cloudagent.databaseUser" . }}
+            - name: AFJ_REST_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-cloudagent.databaseSecretName" . }}
+                  key: {{ include "veritable-cloudagent.databaseSecretPasswordKey" . }}
+            {{- end }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -218,6 +214,10 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.containerPorts.http }}
+            - name: ws
+              containerPort: {{ .Values.containerPorts.ws }}
+            - name: admin
+              containerPort: {{ .Values.containerPorts.admin }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customLivenessProbe "context" $) | nindent 12 }}
@@ -225,7 +225,7 @@ spec:
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.livenessProbe "enabled" "path") "context" $) | nindent 12 }}
             httpGet:
               path: {{ .Values.livenessProbe.path }}
-              port: http
+              port: admin
           {{- end }}
           {{- if .Values.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customReadinessProbe "context" $) | nindent 12 }}
@@ -233,7 +233,7 @@ spec:
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.readinessProbe "enabled" "path") "context" $) | nindent 12 }}
             httpGet:
               path: {{ .Values.readinessProbe.path }}
-              port: http
+              port: admin
           {{- end }}
           {{- if .Values.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.customStartupProbe "context" $) | nindent 12 }}
@@ -241,7 +241,7 @@ spec:
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.startupProbe "enabled" "path") "context" $) | nindent 12 }}
             httpGet:
               path: {{ .Values.startupProbe.path }}
-              port: http
+              port: admin
           {{- end }}
           {{- end }}
           {{- if .Values.lifecycleHooks }}
@@ -251,10 +251,59 @@ spec:
           {{- if .Values.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
+        {{- if eq .Values.ipfs.enabled true }}
+        - name: ipfs
+          image: {{ .Values.ipfs.image.registry }}/{{ .Values.ipfs.image.repository }}:{{ .Values.ipfs.image.tag }}
+          imagePullPolicy: {{ .Values.ipfs.image.pullPolicy }}
+          ports:
+            - name: api
+              containerPort: {{ .Values.ipfs.containerPorts.api }}
+          volumeMounts:
+            - name: ipfs-data
+              mountPath: /data/ipfs
+            {{- if .Values.ipfs.volumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.volumeMounts "context" $) | nindent 6 }}
+            {{- end }}
+          {{- if .Values.ipfs.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+              - ipfs
+              - version
+            initialDelaySeconds: {{ .Values.ipfs.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.ipfs.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.ipfs.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.ipfs.livenessProbe.failureThreshold }}
+            successThreshold: {{ .Values.ipfs.livenessProbe.successThreshold }}
+          {{- end }}
+          {{- if .Values.ipfs.readinessProbe.enabled }}
+          readinessProbe:
+            tcpSocket:
+              port: api
+            initialDelaySeconds: {{ .Values.ipfs.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.ipfs.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.ipfs.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.ipfs.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.ipfs.readinessProbe.successThreshold }}
+          {{- end }}
+          env:
+            {{- if .Values.ipfs.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.extraEnvVars "context" $) | nindent 6 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.ipfs.resources | nindent 6 }}
         {{- if .Values.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.sidecars "context" $) | nindent 8 }}
         {{- end }}
+      {{- end }}
       volumes:
         {{- if .Values.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if eq .Values.ipfs.enabled true }}
+        - name: ipfs-data
+          emptyDir: {}
+        {{- if .Values.ipfs.volumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ipfs.volumes "context" $) | nindent 4 }}
+        {{- end }}
         {{- end }}

@@ -72,6 +72,18 @@ userUri: "//Alice"
 ## @param enableIndexer Enable the indexer
 ##
 enableIndexer: true
+## Authentication IDP configuration
+## @param auth.clientId OAuth2 client id to use when requesting tokens
+## @param auth.publicUrlPrefix Internet accessible URL prefix for IDP routes
+## @param auth.internalUrlPrefix Cluster accessible URL prefix for IDP routes
+## @param auth.tokenPath Path segment to append to the appropriate prefix to determine OAuth2 token endpoint
+## @param auth.jwksPath Path segment to append to the appropriate prefix to determine JWKS certificate endpoint
+auth:
+  clientId: "sequence"
+  publicUrlPrefix: ""
+  internalUrlPrefix: ""
+  tokenPath: "/token"
+  jwksPath: "/certs"
 
 
 ## Digital Catapult sqnc-matchmaker-api image
@@ -87,7 +99,7 @@ enableIndexer: true
 image:
   registry: docker.io
   repository: digicatapult/sqnc-matchmaker-api
-  tag: v2.3.0
+  tag: v3.0.2
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -543,7 +555,7 @@ initDbCreate:
   image:
     registry: docker.io
     repository: postgres
-    tag: '15-alpine'
+    tag: '16-alpine'
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

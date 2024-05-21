@@ -3,12 +3,12 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/sqnc-matchmaker-api
-appVersion: v2.3.0
+appVersion: v3.0.2
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
     repository: https://charts.bitnami.com/bitnami
-    version: 14.x.x
+    version: 15.x
   - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
@@ -33,4 +33,4 @@ maintainers:
 name: sqnc-matchmaker-api
 sources:
   - https://github.com/digicatapult/sqnc-matchmaker-api
-version: 1.0.2
+version: 2.0.1

@@ -60,43 +60,156 @@ diagnosticMode:
   args:
     - infinity
 
-## @section SQNC Identity Service config parameters
+## @section veritable cloudagent config parameters
 ##
+## @param label veritable-cloudagent label
+label: "veritable cloudagent rest api"
+## @param walletId veritable-cloudagent wallet id
+walletId: "walletId"
+## @param walletKey.secret veritable-cloudagent wallet key secret value
+## @param walletKey.existingSecret veritable-cloudagent wallet key existing secret
+## @param walletKey.existingSecretKey veritable-cloudagent wallet key existing secret key
+walletKey:
+  secret: "walletKey"
+  existingSecret: ""
+  existingSecretKey: ""
+## @param storageType veritable-cloudagent storage type (can be either postgres sqlite)
+storageType: "postgres"
+## @param endpoint an array of veritable-cloudagent endpoints to be used in creating invitations in the format http(s)://FQDN:PORT or ws(s)://FQDN:PORT - only the first option in the array is actually used
+endpoint: ["http://localhost:5002"]
+## @param logLevel veritable-cloudagent log level from 1 to 5
+logLevel: 3
+## @param useDidSovPrefixWhereAllowed veritable-cloudagent use did sov prefix where allowed
+useDidSovPrefixWhereAllowed: false
+## @param useDidKeyInProtocols veritable-cloudagent use did key in protocols
+useDidKeyInProtocols: true
+## @param outboundTransport choice of outbound transport mechanisms for veritable-cloudagent can be http, ws, or both in an array
+outboundTransport: "http"
+## @param autoAcceptConnections veritable-cloudagent auto accept connections
+autoAcceptConnections: false
+## @param autoAcceptCredentials veritable-cloudagent auto accept credentials choices are always, never and contentApproved
+autoAcceptCredentials: "never"
+## @param autoAcceptMediationRequests veritable-cloudagent auto accept mediation requests
+autoAcceptMediationRequests: false
+## @param autoAcceptProofs veritable-cloudagent auto accept proofs choices are always, never and contentApproved
+autoAcceptProofs: "never"
+## @param autoUpdateStorageOnStartup veritable-cloudagent auto update storage on startup
+autoUpdateStorageOnStartup: true
+## @param backupBeforeStorageUpdate veritable-cloudagent backup before storage update
+backupBeforeStorageUpdate: false
+## @param connectionImageUrl veritable-cloudagent connection image url
+connectionImageUrl: ""
+## @param webhookUrl veritable-cloudagent web hook url
+webhookUrl: ""
+## @param adminPort veritable-cloudagent admin port
+adminPort: 3000
+## @param ipfsExternalOrigin veritable-cloudagent ipfs external origin url (if ipfs.enabled is set to true then we will always point to http://localhost:5001)
+ipfsExternalOrigin: ""
 
-## @param logLevel Allowed values: error, warn, info, debug
+## @section IPFS Container Parameters
+## @param ipfs.enabled Enable IPFS container within pod
+## IPFS container image parameters
+## ref: https://hub.docker.com/r/ipfs/go-ipfs/tags/
+## @param ipfs.image.registry IPFS image registry
+## @param ipfs.image.repository IPFS image repository
+## @param ipfs.image.tag IPFS image tag (immutable tags are recommended)
+## @param ipfs.image.digest IPFS image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+## @param ipfs.image.pullPolicy IPFS image pull policy
 ##
-logLevel: "info"
-## @param selfAddress The SS58 address for this services owner
+ipfs:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: ipfs/kubo
+    tag: v0.28.0
+    digest: ""
+    pullPolicy: IfNotPresent
+
+## @param ipfs.containerPorts.api IPFS container API port
 ##
-selfAddress: ""
-## Authentication IDP configuration
-## @param auth.clientId OAuth2 client id to use when requesting tokens
-## @param auth.publicUrlPrefix Internet accessible URL prefix for IDP routes
-## @param auth.internalUrlPrefix Cluster accessible URL prefix for IDP routes
-## @param auth.tokenPath Path segment to append to the appropriate prefix to determine OAuth2 token endpoint
-## @param auth.jwksPath Path segment to append to the appropriate prefix to determine JWKS certificate endpoint
-auth:
-  clientId: "sequence"
-  publicUrlPrefix: ""
-  internalUrlPrefix: ""
-  tokenPath: "/token"
-  jwksPath: "/certs"
+  containerPorts:
+    api: 5001
 
+## IPFS container resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+## @param ipfs.resources.limits.cpu The resources limits for the IPFS container for CPU
+## @param ipfs.resources.limits.memory The resources limits for the IPFS container for memory
+## @param ipfs.resources.requests.cpu The requested resources for the IPFS container for CPU
+## @param ipfs.resources.requests.memory The requested resources for the IPFS container for memory
+##
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
 
-## Digital Catapult sqnc-identity-service image
-## ref: https://hub.docker.com/r/digicatapult/sqnc-identity-service/tags/
-## @param image.registry sqnc-identity-service image registry
-## @param image.repository sqnc-identity-service image repository
-## @param image.tag sqnc-identity-service image tag (immutable tags are recommended)
-## @param image.digest sqnc-identity-service image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
-## @param image.pullPolicy sqnc-identity-service image pull policy
-## @param image.pullSecrets sqnc-identity-service image pull secrets
-## @param image.debug Enable sqnc-identity-service image debug mode
+## IPFS container liveness probe parameters
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param ipfs.livenessProbe.enabled Enable livenessProbe on IPFS container
+## @param ipfs.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+## @param ipfs.livenessProbe.periodSeconds Period seconds for livenessProbe
+## @param ipfs.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+## @param ipfs.livenessProbe.failureThreshold Failure threshold for livenessProbe
+## @param ipfs.livenessProbe.successThreshold Success threshold for livenessProbe
+##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+
+## IPFS container readiness probe parameters
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+## @param ipfs.readinessProbe.enabled Enable readinessProbe on IPFS container
+## @param ipfs.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+## @param ipfs.readinessProbe.periodSeconds Period seconds for readinessProbe
+## @param ipfs.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+## @param ipfs.readinessProbe.failureThreshold Failure threshold for readinessProbe
+## @param ipfs.readinessProbe.successThreshold Success threshold for readinessProbe
+##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+    successThreshold: 1
+
+## @param ipfs.extraEnvVars Extra environment variables for the IPFS container
+## e.g:
+## extraEnvVars:
+##   - name: FOO
+##     value: "bar"
+##
+  extraEnvVars: []
+
+## @param ipfs.volumeMounts Optionally specify extra list of additional volumeMounts for the IPFS container
+##
+  volumeMounts: []
+
+## @param ipfs.volumes Optionally specify extra list of additional volumes for the IPFS pod(s)
+##
+  volumes: []
+
+## @section veritable-cloudagent deployment parameters
+## Digital Catapult veritable-cloudagent image
+## ref: https://hub.docker.com/r/digicatapult/veritable-cloudagent/tags/
+## @param image.registry veritable-cloudagent image registry
+## @param image.repository veritable-cloudagent image repository
+## @param image.tag veritable-cloudagent image tag (immutable tags are recommended)
+## @param image.digest veritable-cloudagent image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+## @param image.pullPolicy veritable-cloudagent image pull policy
+## @param image.pullSecrets veritable-cloudagent image pull secrets
+## @param image.debug Enable veritable-cloudagent image debug mode
 ##
 image:
   registry: docker.io
-  repository: digicatapult/sqnc-identity-service
-  tag: v2.0.4
+  repository: digicatapult/veritable-cloudagent
+  tag: v0.7.20
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -114,16 +227,20 @@ image:
   ## Enable debug mode
   ##
   debug: false
-## @param replicaCount Number of sqnc-identity-service replicas to deploy
+## @param replicaCount Number of veritable-cloudagent replicas to deploy
 ##
 replicaCount: 1
-## @param containerPorts.http sqnc-identity-service HTTP container port
+## @param containerPorts.http veritable-cloudagent HTTP container port
+## @param containerPorts.ws veritable-cloudagent WS container port
+## @param containerPorts.admin veritable-cloudagent admin container port
 ##
 containerPorts:
-  http: 3000
-## Configure extra options for sqnc-identity-service containers' liveness and readiness probes
+  http: 5002
+  ws: 5003
+  admin: 3000
+## Configure extra options for veritable-cloudagent containers' liveness and readiness probes
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-## @param livenessProbe.enabled Enable livenessProbe on sqnc-identity-service containers
+## @param livenessProbe.enabled Enable livenessProbe on veritable-cloudagent containers
 ## @param livenessProbe.path Path for to check for livenessProbe
 ## @param livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
 ## @param livenessProbe.periodSeconds Period seconds for livenessProbe
@@ -133,13 +250,13 @@ containerPorts:
 ##
 livenessProbe:
   enabled: true
-  path: /health
+  path: /agent
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
   successThreshold: 1
-## @param readinessProbe.enabled Enable readinessProbe on sqnc-identity-service containers
+## @param readinessProbe.enabled Enable readinessProbe on veritable-cloudagent containers
 ## @param readinessProbe.path Path for to check for readinessProbe
 ## @param readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
 ## @param readinessProbe.periodSeconds Period seconds for readinessProbe
@@ -149,13 +266,13 @@ livenessProbe:
 ##
 readinessProbe:
   enabled: true
-  path: /health
+  path: /agent
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 5
   successThreshold: 1
-## @param startupProbe.enabled Enable startupProbe on sqnc-identity-service containers
+## @param startupProbe.enabled Enable startupProbe on veritable-cloudagent containers
 ## @param startupProbe.path Path for to check for startupProbe
 ## @param startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
 ## @param startupProbe.periodSeconds Period seconds for startupProbe
@@ -165,7 +282,7 @@ readinessProbe:
 ##
 startupProbe:
   enabled: false
-  path: /health
+  path: /agent
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
@@ -180,28 +297,28 @@ customReadinessProbe: {}
 ## @param customStartupProbe Custom startupProbe that overrides the default one
 ##
 customStartupProbe: {}
-## sqnc-identity-service resource requests and limits
+## veritable-cloudagent resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-## @param resources.limits The resources limits for the sqnc-identity-service containers
-## @param resources.requests The requested resources for the sqnc-identity-service containers
+## @param resources.limits The resources limits for the veritable-cloudagent containers
+## @param resources.requests The requested resources for the veritable-cloudagent containers
 ##
 resources:
   limits: {}
   requests: {}
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-## @param podSecurityContext.enabled Enabled sqnc-identity-service pods' Security Context
-## @param podSecurityContext.fsGroup Set sqnc-identity-service pod's Security Context fsGroup
+## @param podSecurityContext.enabled Enabled veritable-cloudagent pods' Security Context
+## @param podSecurityContext.fsGroup Set veritable-cloudagent pod's Security Context fsGroup
 ##
 podSecurityContext:
   enabled: true
   fsGroup: 1001
 ## Configure Container Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-## @param containerSecurityContext.enabled Enabled sqnc-identity-service containers' Security Context
-## @param containerSecurityContext.runAsUser Set sqnc-identity-service containers' Security Context runAsUser
-## @param containerSecurityContext.runAsNonRoot Set sqnc-identity-service containers' Security Context runAsNonRoot
-## @param containerSecurityContext.readOnlyRootFilesystem Set sqnc-identity-service containers' Security Context runAsNonRoot
+## @param containerSecurityContext.enabled Enabled veritable-cloudagent containers' Security Context
+## @param containerSecurityContext.runAsUser Set veritable-cloudagent containers' Security Context runAsUser
+## @param containerSecurityContext.runAsNonRoot Set veritable-cloudagent containers' Security Context runAsNonRoot
+## @param containerSecurityContext.readOnlyRootFilesystem Set veritable-cloudagent containers' Security Context runAsNonRoot
 ##
 containerSecurityContext:
   enabled: true
@@ -215,15 +332,15 @@ command: []
 ## @param args Override default container args (useful when using custom images)
 ##
 args: []
-## @param hostAliases sqnc-identity-service pods host aliases
+## @param hostAliases veritable-cloudagent pods host aliases
 ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
 ##
 hostAliases: []
-## @param podLabels Extra labels for sqnc-identity-service pods
+## @param podLabels Extra labels for veritable-cloudagent pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 ##
 podLabels: {}
-## @param podAnnotations Annotations for sqnc-identity-service pods
+## @param podAnnotations Annotations for veritable-cloudagent pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations: {}
@@ -247,9 +364,9 @@ pdb:
   maxUnavailable: ""
 ## Autoscaling configuration
 ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-## @param autoscaling.enabled Enable autoscaling for sqnc-identity-service
-## @param autoscaling.minReplicas Minimum number of sqnc-identity-service replicas
-## @param autoscaling.maxReplicas Maximum number of sqnc-identity-service replicas
+## @param autoscaling.enabled Enable autoscaling for veritable-cloudagent
+## @param autoscaling.minReplicas Minimum number of veritable-cloudagent replicas
+## @param autoscaling.maxReplicas Maximum number of veritable-cloudagent replicas
 ## @param autoscaling.targetCPU Target CPU utilization percentage
 ## @param autoscaling.targetMemory Target Memory utilization percentage
 ##
@@ -276,20 +393,20 @@ nodeAffinityPreset:
   ##   - e2e-az2
   ##
   values: []
-## @param affinity Affinity for sqnc-identity-service pods assignment
+## @param affinity Affinity for veritable-cloudagent pods assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
 ## NOTE: `podAffinityPreset`, `podAntiAffinityPreset`, and `nodeAffinityPreset` will be ignored when it's set
 ##
 affinity: {}
-## @param nodeSelector Node labels for sqnc-identity-service pods assignment
+## @param nodeSelector Node labels for veritable-cloudagent pods assignment
 ## ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
 nodeSelector: {}
-## @param tolerations Tolerations for sqnc-identity-service pods assignment
+## @param tolerations Tolerations for veritable-cloudagent pods assignment
 ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
 tolerations: []
-## @param updateStrategy.type sqnc-identity-service statefulset strategy type
+## @param updateStrategy.type veritable-cloudagent statefulset strategy type
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
 ##
 updateStrategy:
@@ -298,14 +415,14 @@ updateStrategy:
   ##
   type: RollingUpdate
 
-## @param priorityClassName sqnc-identity-service pods' priorityClassName
+## @param priorityClassName veritable-cloudagent pods' priorityClassName
 ##
 priorityClassName: ""
 ## @param topologySpreadConstraints Topology Spread Constraints for pod assignment spread across your cluster among failure-domains. Evaluated as a template
 ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/#spread-constraints-for-pods
 ##
 topologySpreadConstraints: []
-## @param schedulerName Name of the k8s scheduler (other than default) for sqnc-identity-service pods
+## @param schedulerName Name of the k8s scheduler (other than default) for veritable-cloudagent pods
 ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
 ##
 schedulerName: ""
@@ -313,29 +430,29 @@ schedulerName: ""
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/pod/#termination-of-pods
 ##
 terminationGracePeriodSeconds: ""
-## @param lifecycleHooks for the sqnc-identity-service container(s) to automate configuration before or after startup
+## @param lifecycleHooks for the veritable-cloudagent container(s) to automate configuration before or after startup
 ##
 lifecycleHooks: {}
-## @param extraEnvVars Array with extra environment variables to add to sqnc-identity-service nodes
+## @param extraEnvVars Array with extra environment variables to add to veritable-cloudagent nodes
 ## e.g:
 ## extraEnvVars:
 ##   - name: FOO
 ##     value: "bar"
 ##
 extraEnvVars: []
-## @param extraEnvVarsCM Name of existing ConfigMap containing extra env vars for sqnc-identity-service nodes
+## @param extraEnvVarsCM Name of existing ConfigMap containing extra env vars for veritable-cloudagent nodes
 ##
 extraEnvVarsCM: ""
-## @param extraEnvVarsSecret Name of existing Secret containing extra env vars for sqnc-identity-service nodes
+## @param extraEnvVarsSecret Name of existing Secret containing extra env vars for veritable-cloudagent nodes
 ##
 extraEnvVarsSecret: ""
-## @param extraVolumes Optionally specify extra list of additional volumes for the sqnc-identity-service pod(s)
+## @param extraVolumes Optionally specify extra list of additional volumes for the veritable-cloudagent pod(s)
 ##
 extraVolumes: []
-## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for the sqnc-identity-service container(s)
+## @param extraVolumeMounts Optionally specify extra list of additional volumeMounts for the veritable-cloudagent container(s)
 ##
 extraVolumeMounts: []
-## @param sidecars Add additional sidecar containers to the sqnc-identity-service pod(s)
+## @param sidecars Add additional sidecar containers to the veritable-cloudagent pod(s)
 ## e.g:
 ## sidecars:
 ##   - name: your-image-name
@@ -346,7 +463,7 @@ extraVolumeMounts: []
 ##         containerPort: 1234
 ##
 sidecars: []
-## @param initContainers Add additional init containers to the sqnc-identity-service pod(s)
+## @param initContainers Add additional init containers to the veritable-cloudagent pod(s)
 ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
 ## e.g:
 ## initContainers:
@@ -360,46 +477,50 @@ initContainers: []
 ## @section Traffic Exposure Parameters
 ##
 
-## sqnc-identity-service service parameters
+## veritable-cloudagent service parameters
 ##
 service:
-  ## @param service.type sqnc-identity-service service type
+  ## @param service.type veritable-cloudagent service type
   ##
   type: ClusterIP
-  ## @param service.ports.http sqnc-identity-service service HTTP port
+  ## @param service.ports.http veritable-cloudagent service HTTP port
+  ## @param service.ports.ws veritable-cloudagent service WS port
   ##
   ports:
-    http: 3000
+    http: 5002
+    ws: 5003
   ## Node ports to expose
   ## @param service.nodePorts.http Node port for HTTP
+  ## @param service.nodePorts.ws Node port for WS
   ## NOTE: choose port between <30000-32767>
   ##
   nodePorts:
     http: ""
-  ## @param service.clusterIP sqnc-identity-service service Cluster IP
+    ws: ""
+  ## @param service.clusterIP veritable-cloudagent service Cluster IP
   ## e.g.:
   ## clusterIP: None
   ##
   clusterIP: ""
-  ## @param service.loadBalancerIP sqnc-identity-service service Load Balancer IP
+  ## @param service.loadBalancerIP veritable-cloudagent service Load Balancer IP
   ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
   ##
   loadBalancerIP: ""
-  ## @param service.loadBalancerSourceRanges sqnc-identity-service service Load Balancer sources
+  ## @param service.loadBalancerSourceRanges veritable-cloudagent service Load Balancer sources
   ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
   ## e.g:
   ## loadBalancerSourceRanges:
   ##   - 10.10.10.0/24
   ##
   loadBalancerSourceRanges: []
-  ## @param service.externalTrafficPolicy sqnc-identity-service service external traffic policy
+  ## @param service.externalTrafficPolicy veritable-cloudagent service external traffic policy
   ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
   ##
   externalTrafficPolicy: Cluster
-  ## @param service.annotations Additional custom annotations for sqnc-identity-service service
+  ## @param service.annotations Additional custom annotations for veritable-cloudagent service
   ##
   annotations: {}
-  ## @param service.extraPorts Extra ports to expose in sqnc-identity-service service (normally used with the `sidecars` value)
+  ## @param service.extraPorts Extra ports to expose in veritable-cloudagent service (normally used with the `sidecars` value)
   ##
   extraPorts: []
   ## @param service.sessionAffinity Control where client requests go, to the same pod or round-robin
@@ -414,11 +535,66 @@ service:
   ##
   sessionAffinityConfig: {}
 
-## sqnc-identity-service ingress parameters
+## veritable-cloudagent admin service parameters
+##
+adminService:
+  ## @param adminService.type veritable-cloudagent admin service type
+  ##
+  type: ClusterIP
+  ## @param adminService.ports.admin veritable-cloudagent admin service HTTP port
+  ##
+  ports:
+    admin: 3000
+  ## Node ports to expose
+  ## @param adminService.nodePorts.admin Node port for admin HTTP
+  ## NOTE: choose port between <30000-32767>
+  ##
+  nodePorts:
+    admin: ""
+  ## @param adminService.clusterIP veritable-cloudagent admin service Cluster IP
+  ## e.g.:
+  ## clusterIP: None
+  ##
+  clusterIP: ""
+  ## @param adminService.loadBalancerIP veritable-cloudagent admin service Load Balancer IP
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+  ##
+  loadBalancerIP: ""
+  ## @param adminService.loadBalancerSourceRanges veritable-cloudagent admin service Load Balancer sources
+  ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ## e.g:
+  ## loadBalancerSourceRanges:
+  ##   - 10.10.10.0/24
+  ##
+  loadBalancerSourceRanges: []
+  ## @param adminService.externalTrafficPolicy veritable-cloudagent admin service external traffic policy
+  ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+  ## @param adminService.annotations Additional custom annotations for veritable-cloudagent admin service
+  ##
+  annotations: {}
+  ## @param adminService.extraPorts Extra ports to expose in veritable-cloudagent admin service (normally used with the `sidecars` value)
+  ##
+  extraPorts: []
+  ## @param adminService.sessionAffinity Control where client requests go, to the same pod or round-robin
+  ## Values: ClientIP or None
+  ## ref: https://kubernetes.io/docs/user-guide/services/
+  ##
+  sessionAffinity: None
+  ## @param adminService.sessionAffinityConfig Additional settings for the sessionAffinity
+  ## sessionAffinityConfig:
+  ##   clientIP:
+  ##     timeoutSeconds: 300
+  ##
+  sessionAffinityConfig: {}
+
+
+## veritable-cloudagent ingress parameters
 ## ref: http://kubernetes.io/docs/user-guide/ingress/
 ##
 ingress:
-  ## @param ingress.enabled Enable ingress record generation for sqnc-identity-service
+  ## @param ingress.enabled Enable ingress record generation for veritable-cloudagent
   ##
   enabled: true
   ## @param ingress.apiVersion Force Ingress API version (automatically detected if not set)
@@ -426,7 +602,7 @@ ingress:
   apiVersion: ""
   ## @param ingress.hostname Default host for the ingress record
   ##
-  hostname: sqnc-identity-service.local
+  hostname: veritable-cloudagent.local
   ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
   ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
   ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
@@ -438,9 +614,25 @@ ingress:
   ##   - path: /
   ##     pathType: Prefix
   paths:
-    - path: /v1/members
+    - path: /access
       pathType: Prefix
-    - path: /v1/self
+    - path: /agent
+      pathType: Prefix
+    - path: /schemas
+      pathType: Prefix
+    - path: /dids
+      pathType: Prefix
+    - path: /proofs
+      pathType: Prefix
+    - path: /credentials
+      pathType: Prefix
+    - path: /connections
+      pathType: Prefix
+    - path: /oob
+      pathType: Prefix
+    - path: /credential-definitions
+      pathType: Prefix
+    - path: /basic-messages
       pathType: Prefix
   ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
   ## Use this parameter to set the required annotations for cert-manager, see
@@ -465,7 +657,7 @@ ingress:
   ## @param ingress.extraHosts An array with additional hostname(s) to be covered with the ingress record
   ## e.g:
   ## extraHosts:
-  ##   - name: sqnc-identity-service.local
+  ##   - name: veritable-cloudagent.local
   ##     path: /
   ##
   extraHosts: []
@@ -492,8 +684,8 @@ ingress:
   ## e.g:
   ## extraTls:
   ## - hosts:
-  ##     - sqnc-identity-service.local
-  ##   secretName: sqnc-identity-service.local-tls
+  ##     - veritable-cloudagent.local
+  ##   secretName: veritable-cloudagent.local-tls
   ##
   extraTls: []
   ## @param ingress.secrets Custom TLS certificates as secrets
@@ -505,7 +697,7 @@ ingress:
   ## Please see README.md for more information
   ## e.g:
   ## secrets:
-  ##   - name: sqnc-identity-service.local-tls
+  ##   - name: veritable-cloudagent.local-tls
   ##     key: |-
   ##       -----BEGIN RSA PRIVATE KEY-----
   ##       ...
@@ -536,12 +728,12 @@ ingress:
 initDbCreate:
   ## PostreSQL image
   ## ref: https://hub.docker.com/_/postgres/tags/
-  ## @param initDbCreate.image.registry sqnc-routing-service image registry
-  ## @param initDbCreate.image.repository sqnc-routing-service image repository
-  ## @param initDbCreate.image.tag sqnc-routing-service image tag (immutable tags are recommended)
-  ## @param initDbCreate.image.digest sqnc-routing-service image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
-  ## @param initDbCreate.image.pullPolicy sqnc-routing-service image pull policy
-  ## @param initDbCreate.image.pullSecrets sqnc-routing-service image pull secrets
+  ## @param initDbCreate.image.registry veritable-routing-service image registry
+  ## @param initDbCreate.image.repository veritable-routing-service image repository
+  ## @param initDbCreate.image.tag veritable-routing-service image tag (immutable tags are recommended)
+  ## @param initDbCreate.image.digest veritable-routing-service image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+  ## @param initDbCreate.image.pullPolicy veritable-routing-service image pull policy
+  ## @param initDbCreate.image.pullSecrets veritable-routing-service image pull secrets
   ##
   image:
     registry: docker.io
@@ -561,15 +753,6 @@ initDbCreate:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-
-## @param initDbMigrate.enable Run database migration in an init container
-## @param initDbMigrate.environment Database configuration environment to run database into
-## @param initDbMigrate.args Argument to pass to knex to migrate the database
-initDbMigrate:
-  enable: true
-  environment: production
-  args:
-    - "migrate:latest"
 
 ## @section Other Parameters
 ##
@@ -605,18 +788,18 @@ serviceAccount:
 postgresql:
   enabled: true
   auth:
-    username: identity_service
+    username: veritable-cloudgent
     password: ""
-    database: user
+    database: wallet-id
     existingSecret: ""
   architecture: standalone
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
 ## @param externalDatabase.host Database host
 ## @param externalDatabase.port Database port number
-## @param externalDatabase.user Non-root username for sqnc-identity-service
-## @param externalDatabase.password Password for the non-root username for sqnc-identity-service
-## @param externalDatabase.database sqnc-identity-service database name
+## @param externalDatabase.user Non-root username for veritable-cloudagent
+## @param externalDatabase.password Password for the non-root username for veritable-cloudagent
+## @param externalDatabase.database veritable-cloudagent database name
 ## @param externalDatabase.create Enable PostgreSQL user and database creation (when using an external db)
 ## @param externalDatabase.postgresqlPostgresUser External Database admin username
 ## @param externalDatabase.postgresqlPostgresPassword External Database admin password
@@ -627,30 +810,12 @@ postgresql:
 externalDatabase:
   host: ""
   port: 5432
-  user: identity_service
+  user: veritable-cloudagent
   password: ""
-  database: user
+  database: wallet-id
   create: true
   postgresqlPostgresUser: "postgres"
   postgresqlPostgresPassword: ""
   existingSecret: ""
   existingSecretPasswordKey: ""
   existingSecretPostgresPasswordKey: ""
-
-## @section SQNC-Node Parameters
-node:
-  ## @param node.enabled Enable SQNC-Node subchart
-  enabled: true
-  ## @param node.nameOverride String to partially override sqnc-node.fullname template (will maintain the release name)
-  ##
-  nameOverride: ""
-  ## @param node.fullnameOverride String to fully override sqnc-node.fullname template
-  ##
-  fullnameOverride: ""
-## @param externalSqncNode.host External SQNC-Node hostname to query
-##
-externalSqncNode:
-  host: ""
-  ## @param externalSqncNode.port External SQNC-Node port to query
-  ##
-  port: ""

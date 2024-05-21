@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: veritable-cloudagent
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.service.annotations .Values.commonAnnotations }}
+  annotations:
+    {{- if .Values.service.annotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  {{- if and .Values.service.clusterIP (eq .Values.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.service.clusterIP }}
+  {{- end }}
+  {{- if .Values.service.sessionAffinity }}
+  sessionAffinity: {{ .Values.service.sessionAffinity }}
+  {{- end }}
+  {{- if .Values.service.sessionAffinityConfig }}
+  sessionAffinityConfig: {{- include "common.tplvalues.render" (dict "value" .Values.service.sessionAffinityConfig "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if or (eq .Values.service.type "LoadBalancer") (eq .Values.service.type "NodePort") }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if and (eq .Values.service.type "LoadBalancer") (not (empty .Values.service.loadBalancerSourceRanges)) }}
+  loadBalancerSourceRanges: {{ .Values.service.loadBalancerSourceRanges }}
+  {{- end }}
+  {{- if and (eq .Values.service.type "LoadBalancer") (not (empty .Values.service.loadBalancerIP)) }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.service.ports.http }}
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.http)) }}
+      nodePort: {{ .Values.service.nodePorts.http }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    - name: ws
+      port: {{ .Values.service.ports.ws }}
+      protocol: TCP
+      {{- if and (or (eq .Values.service.type "NodePort") (eq .Values.service.type "LoadBalancer")) (not (empty .Values.service.nodePorts.ws)) }}
+      nodePort: {{ .Values.service.nodePorts.ws }}
+      {{- else if eq .Values.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: veritable-cloudagent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "common.names.fullname" . }}-admin
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: veritable-cloudagent
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.adminService.annotations .Values.commonAnnotations }}
+  annotations:
+    {{- if .Values.adminService.annotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.adminService.annotations "context" $) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  type: {{ .Values.adminService.type }}
+  {{- if and .Values.adminService.clusterIP (eq .Values.adminService.type "ClusterIP") }}
+  clusterIP: {{ .Values.adminService.clusterIP }}
+  {{- end }}
+  {{- if .Values.adminService.sessionAffinity }}
+  sessionAffinity: {{ .Values.adminService.sessionAffinity }}
+  {{- end }}
+  {{- if .Values.adminService.sessionAffinityConfig }}
+  sessionAffinityConfig: {{- include "common.tplvalues.render" (dict "value" .Values.adminService.sessionAffinityConfig "context" $) | nindent 4 }}
+  {{- end }}
+  {{- if or (eq .Values.adminService.type "LoadBalancer") (eq .Values.adminService.type "NodePort") }}
+  externalTrafficPolicy: {{ .Values.adminService.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if and (eq .Values.adminService.type "LoadBalancer") (not (empty .Values.adminService.loadBalancerSourceRanges)) }}
+  loadBalancerSourceRanges: {{ .Values.adminService.loadBalancerSourceRanges }}
+  {{- end }}
+  {{- if and (eq .Values.adminService.type "LoadBalancer") (not (empty .Values.adminService.loadBalancerIP)) }}
+  loadBalancerIP: {{ .Values.adminService.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - name: admin
+      port: {{ .Values.adminService.ports.admin }}
+      protocol: TCP
+      {{- if and (or (eq .Values.adminService.type "NodePort") (eq .Values.adminService.type "LoadBalancer")) (not (empty .Values.adminService.nodePorts.admin)) }}
+      nodePort: {{ .Values.adminService.nodePorts.admin }}
+      {{- else if eq .Values.adminService.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.adminService.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.adminService.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: veritable-cloudagent

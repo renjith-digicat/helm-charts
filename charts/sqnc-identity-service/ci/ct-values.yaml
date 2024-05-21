@@ -9,3 +9,6 @@ node:
     - "--rpc-cors=all"
     - "--unsafe-rpc-external"
 selfAddress: 5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty
+auth:
+  publicUrlPrefix: "http://keycloak.exmaple.com"
+  internalUrlPrefix: "http://keycloak.exmaple.com"

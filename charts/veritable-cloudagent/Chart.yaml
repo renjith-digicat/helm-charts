@@ -1,0 +1,29 @@
+annotations:
+  category: veritable
+  licenses: Apache-2.0
+apiVersion: v2
+# renovate: image=digicatapult/veritable-cloudagent
+appVersion: v0.7.20
+dependencies:
+  - condition: postgresql.enabled
+    name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 15.x.x
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 2.x.x
+description: The veritable-cloudagent is a component of the veritable distributed identity system.
+home: https://github.com/digicatapult/veritable-documentation
+icon: https://raw.githubusercontent.com/digicatapult/veritable-documentation/main/assets/icon.png
+keywords:
+  - veritable
+maintainers:
+  - name: digicatapult  # Digital Catapult
+    url: https://github.com/digicatapult/helm-charts
+    email: opensource@digicatapult.org.uk
+name: veritable-cloudagent
+sources:
+  - https://github.com/digicatapult/veritable-cloudagent
+version: 1.0.1

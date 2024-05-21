@@ -1,9 +1,0 @@
-dependencies:
-- name: kafka
-  repository: https://charts.bitnami.com/bitnami
-  version: 20.0.5
-- name: common
-  repository: https://charts.bitnami.com/bitnami
-  version: 2.2.2
-digest: sha256:f156ac9f4709f407ef7ac2777438bfa2050085170dad85d699fb74c3458deaf1
-generated: "2023-01-24T17:17:40.519271Z"
