@@ -1,5 +1,5 @@
 annotations:
-  category: veritable 
+  category: veritable
   licenses: Apache-2.0
 apiVersion: v2
 # enovate: image=digicatapult/veritable-ui - TODO double check
@@ -10,7 +10,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     version: 14.x.x
   # TODO check bitnami common
-  - name: common 
+  - name: common
     repository: https://charts.bitnami.com/bitnami
     tags:
       - bitnami-common
