@@ -171,10 +171,7 @@ spec:
             - name: COMPANY_HOUSE_API_URL
               value: {{ .Values.auth.idp.internalURLPrefix | quote }}
             - name: COMPANY_PROFILE_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "veritable-ui.companyHouseApiKeySecretName" . }}
-                  key: {{ include "veritable-ui.companyHouseApiKeySecretKey" . }}
+              value: {{ .Values.companyHouseApiKey.secret | quote }}
             - name: PORT
               value: {{ .Values.containerPorts.http | quote }}
             - name: LOG_LEVEL

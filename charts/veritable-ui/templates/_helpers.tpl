@@ -20,7 +20,6 @@ Return the proper Docker Image Registry Secret Names
 {{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.initDbCreate.image ) "global" .Values.global) -}}
 {{- end -}}
 
-
 {{/*
 Create the name of the service account to use
 */}}
@@ -37,7 +36,7 @@ Create a default fully qualified app name for the company house.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "veritable-ui.companyHouseApiKey.fullname" -}}
-{{- printf "%s-company-house-key" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-"  -}}
+{{- printf "%s-company-house-api-key" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-"  -}}
 {{- end -}}
 
 
