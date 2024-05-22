@@ -548,7 +548,7 @@ initDbMigrate:
   args:
     - "migrate:latest"
     - "--knexfile"
-    - "build/lib/db/knexfile.js"
+    - "/knexfile.js"
 
 ## @section Other Parameters
 ##
