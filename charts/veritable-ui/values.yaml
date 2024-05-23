@@ -68,7 +68,7 @@ companysHouseApiKey:
   secret: "companysHouseApiKey"
   existingSecret: ""
   existingSecretKey: ""
- 
+
 companysHouseApiUrl: "https://api.company-information.service.gov.uk"
 logLevel: "debug"
 
@@ -641,4 +641,3 @@ externalDatabase:
   existingSecret: ""
   existingSecretPasswordKey: ""
   existingSecretPostgresPasswordKey: ""
-
