@@ -32,10 +32,41 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Create a default fully qualified app name for the session cookies.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "veritable-ui.cookieSessionKeys.fullname" -}}
+{{- printf "%s-cookie-session-keys" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-"  -}}
+{{- end -}}
+
+{{/*
+Return the cookie session keys Secret Name
+*/}}
+{{- define "veritable-ui.cookieSessionKeysSecretName" -}}
+{{- if .Values.cookieSessionKeys.existingSecret -}}
+    {{- tpl .Values.cookieSessionKeys.existingSecret $ -}}
+{{- else -}}
+    {{- include "veritable-ui.cookieSessionKeys.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure cookie session keys 
+*/}}
+{{- define "veritable-ui.cookieSessionKeysSecretKey" -}}
+{{- if .Values.cookieSessionKeys.existingSecretKey -}}
+    {{- printf "%s" .Values.cookieSessionKeys.existingSecretKey -}}
+{{- else -}}
+    {{- print "secret" -}}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Create a default fully qualified app name for the company house.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "veritable-ui.companyHouseApiKey.fullname" -}}
+{{- define "veritable-ui.companysHouseApiKey.fullname" -}}
 {{- printf "%s-company-house-api-key" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-"  -}}
 {{- end -}}
 
@@ -44,10 +75,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Return the company profile API key secret name
 */}}
 {{- define "veritable-ui.companyHouseApiKeySecretName" -}}
-{{- if .Values.companyHouseApiKey.secret -}}
-    {{- tpl .Values.companyHouseApiKey.secret $ -}}
+{{- if .Values.companysHouseApiKey.existingSecret -}}
+    {{- tpl .Values.companysHouseApiKey.existingSecret $ -}}
 {{- else -}}
-    {{- include "veritable-ui.companyHouseApiKey.fullname" . -}}
+    {{- include "veritable-ui.companysHouseApiKey.fullname" . -}}
 {{- end -}}
 {{- end -}}
 
@@ -55,12 +86,13 @@ Return the company profile API key secret name
 Add environment variables to configure company house api secret key
 */}}
 {{- define "veritable-ui.companyHouseApiKeySecretKey" -}}
-{{- if .Values.companyHouseApiKey.secretKey -}}
-    {{- printf "%s" .Values.walletKey.existingSecretKey -}}
+{{- if .Values.companysHouseApiKey.existingSecretKey -}}
+    {{- printf "%s" .Values.companysHouseApiKey.existingSecretKey -}}
 {{- else -}}
     {{- print "secret" -}}
 {{- end -}}
 {{- end -}}
+
 
 {{/*
 Create a default fully qualified app name.

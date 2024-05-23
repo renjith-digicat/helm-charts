@@ -60,6 +60,37 @@ diagnosticMode:
   args:
     - infinity
 
+## @section veritable cloudagent config parameters
+## TODO update name to companys
+## TODO bash completion make sure kubectl (bash complete@2)
+companysHouseApiKey:
+  enabled: true
+  secret: "companysHouseApiKey"
+  existingSecret: ""
+  existingSecretKey: ""
+  
+companysHouseApiUrl: "https://api.company-information.service.gov.uk"
+logLevel: "debug"
+
+cookieSessionKeys: 
+  enabled: true
+  secret:
+    - "secret"
+  existingSecret: ""
+  existingSecretKey: ""
+
+publicUrl: "http://localhost:3000"
+apiSwaggerBgColor: "#fafafa"
+apiSwaggerTitle: "Veritable"
+apiSwaggerHeading: "Veritable"
+
+idpClientId: "veritable-ui"
+idpPublicURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
+idpInternalURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
+idpAuthPath: "/auth"
+idpTokenPath: "/token"
+idpJWKSPath: "/certs"
+
 ## Digital Catapult veritable-ui image
 ## ref: https://hub.docker.com/r/digicatapult/veritable-ui/tags/
 ## @param image.registry veritable-ui image registry
@@ -548,15 +579,9 @@ initDbMigrate:
   args:
     - "migrate:latest"
     - "--knexfile"
-    - "/knexfile.js"
+    - "knexfile.js"
 
-## @section Other Parameters
-##
-companyHouseApiKey:
-  enabled: true
-  secret: "companyHouseApiKey"
-  existingSecret: ""
-  existingSecretKey: ""
+
 
 ## ServiceAccount configuration
 ##
@@ -657,22 +682,3 @@ externalSqncIdentity:
   ## @param externalSqncIdentity.port External SQNC-Identity-Service port
   ##
   port: ""
-
-
-## @section authentication configuration
-##
-## @param auth.idp.clientId IDP Client ID
-## @param auth.idp.publicURLPrefix public URL prefix
-## @param auth.idp.internalURLPrefix internal URL prefix
-## @param auth.idp.authPath IDP authentication path
-## @param auth.idp.tokenPath IDP token path
-## @param auth.idp.JWKSPath IDP JWKS path
-auth:
-  enabled: true
-  idp: 
-    clientId: "veritable-ui"
-    publicURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
-    internalURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
-    authPath: "/auth"
-    tokenPath: "/token"
-    JWKSPath: "/certs"

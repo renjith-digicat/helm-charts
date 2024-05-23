@@ -156,22 +156,34 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.args "context" $) | nindent 12 }}
           {{- end }}
           env:
+            - name: COOKIE_SESSION_KEYS
+              value: {{ .Values.cookieSessionKeys.secret | quote }}
+            - name: PUBLIC_URL
+              value: {{ .Values.publicUrl | quote }}
+            - name: API_SWAGGER_BG_COLOR
+              value: {{ .Values.apiSwaggerBgColor | quote }}
+            - name: API_SWAGGER_TITLE
+              value: {{ .Values.apiSwaggerTitle | quote }}
+            - name: API_SWAGGER_HEADING
+              value: {{ .Values.apiSwaggerHeading | quote }}
             - name: IDP_CLIENT_ID
-              value: {{ .Values.auth.idp.clientId | quote }}
+              value: {{ .Values.idpClientId | quote }}
+            - name: IDP_CLIENT_ID
+              value: {{ .Values.idpClientId | quote }}
             - name: IDP_PUBLIC_URL_PREFIX
-              value: {{ .Values.auth.idp.publicURLPrefix | quote }}
+              value: {{ .Values.idpPublicURLPrefix | quote }}
             - name: IDP_INTERNAL_URL_PREFIX
-              value: {{ .Values.auth.idp.internalURLPrefix | quote }}
+              value: {{ .Values.idpInternalURLPrefix | quote }}
             - name: IDP_AUTH_PATH
-              value: {{ .Values.auth.idp.authPath | quote }}
+              value: {{ .Values.idpAuthPath | quote }}
             - name: IDP_TOKEN_PATH
-              value: {{ .Values.auth.idp.tokenPath | quote }}
+              value: {{ .Values.idpTokenPath | quote }}
             - name: IDP_JWKS_PATH
-              value: {{ .Values.auth.idp.JWKSPath | quote }}
+              value: {{ .Values.idpJWKSPath | quote }}
             - name: COMPANY_HOUSE_API_URL
-              value: {{ .Values.auth.idp.internalURLPrefix | quote }}
+              value: {{ .Values.companysHouseApiUrl | quote }}
             - name: COMPANY_PROFILE_API_KEY
-              value: {{ .Values.companyHouseApiKey.secret | quote }}
+              value: {{ .Values.companysHouseApiKey.secret | quote }}
             - name: PORT
               value: {{ .Values.containerPorts.http | quote }}
             - name: LOG_LEVEL
