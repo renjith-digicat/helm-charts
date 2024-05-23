@@ -68,11 +68,11 @@ companysHouseApiKey:
   secret: "companysHouseApiKey"
   existingSecret: ""
   existingSecretKey: ""
-  
+ 
 companysHouseApiUrl: "https://api.company-information.service.gov.uk"
 logLevel: "debug"
 
-cookieSessionKeys: 
+cookieSessionKeys:
   enabled: true
   secret:
     - "secret"
@@ -578,10 +578,6 @@ initDbMigrate:
   environment: production
   args:
     - "migrate:latest"
-    - "--knexfile"
-    - "knexfile.js"
-
-
 
 ## ServiceAccount configuration
 ##
