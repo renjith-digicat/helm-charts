@@ -642,38 +642,3 @@ externalDatabase:
   existingSecretPasswordKey: ""
   existingSecretPostgresPasswordKey: ""
 
-## @section SQNC-Node Parameters
-node:
-  ## @param node.enabled Enable SQNC-Node subchart
-  enabled: true
-  ## @param node.nameOverride String to partially override sqnc-node.fullname template (will maintain the release name)
-  ##
-  nameOverride: ""
-  ## @param node.fullnameOverride String to fully override sqnc-node.fullname template
-  ##
-  fullnameOverride: ""
-## @param externalSqncNode.host External SQNC-Node hostname to query
-##
-externalSqncNode:
-  host: ""
-  ## @param externalSqncNode.port External SQNC-Node port to query
-  ##
-  port: ""
-
-## @section SQNC-Ipfs parameters
-## @param externalSqncIpfs.host External SQNC-Ipfs hostname
-##
-externalSqncIpfs:
-  host: ""
-  ## @param externalSqncIpfs.port External SQNC-Ipfs port
-  ##
-  port: ""
-
-## @section SQNC-Identity-Service parameters
-## @param externalSqncIdentity.host External SQNC-Identity-Service hostname
-##
-externalSqncIdentity:
-  host: ""
-  ## @param externalSqncIdentity.port External SQNC-Identity-Service port
-  ##
-  port: ""
