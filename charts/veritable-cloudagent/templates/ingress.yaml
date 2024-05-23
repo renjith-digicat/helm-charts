@@ -36,7 +36,7 @@ spec:
             {{- if eq "true" (include "common.ingress.supportsPathType" $) }}
             pathType: {{ .pathType }}
             {{- end }}
-            backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" $) "servicePort" "http" "context" $) | nindent 14 }}
+            backend: {{- include "common.ingress.backend" (dict "serviceName" (printf "%s-admin" (include "common.names.fullname" $)) "servicePort" "admin" "context" $) | nindent 14 }}
           {{- end }}
     {{- end }}
     {{- range .Values.ingress.extraHosts }}
@@ -51,7 +51,7 @@ spec:
             {{- if eq "true" (include "common.ingress.supportsPathType" $) }}
             pathType: {{ default "ImplementationSpecific" .pathType }}
             {{- end }}
-            backend: {{- include "common.ingress.backend" (dict "serviceName" (include "common.names.fullname" $) "servicePort" "http" "context" $) | nindent 14 }}
+            backend: {{- include "common.ingress.backend" (dict "serviceName" (printf "%s-admin" (include "common.names.fullname" $)) "servicePort" "admin" "context" $) | nindent 14 }}
           {{- end }}
     {{- end }}
     {{- if .Values.ingress.extraRules }}
