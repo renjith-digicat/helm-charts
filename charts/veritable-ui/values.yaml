@@ -61,8 +61,6 @@ diagnosticMode:
     - infinity
 
 ## @section veritable cloudagent config parameters
-## TODO update name to companys
-## TODO bash completion make sure kubectl (bash complete@2)
 companysHouseApiKey:
   enabled: true
   secret: "companysHouseApiKey"
