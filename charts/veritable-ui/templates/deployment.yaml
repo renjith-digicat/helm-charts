@@ -201,12 +201,6 @@ spec:
                 secretKeyRef:
                   name: {{ include "veritable-ui.databaseSecretName" . }}
                   key: {{ include "veritable-ui.databaseSecretPasswordKey" . }}
-            - name: EXTERNAL_ORIGIN
-              value: {{ .Values.externalOrigin }}
-            {{ if .Values.externalPathPrefix }}
-            - name: EXTERNAL_PATH_PREFIX
-              value: {{ .Values.externalPathPrefix }}
-            {{ end }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
