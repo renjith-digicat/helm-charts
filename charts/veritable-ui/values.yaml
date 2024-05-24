@@ -87,6 +87,8 @@ cookieSessionKeys:
     - "secret"
   existingSecret: ""
   existingSecretKey: ""
+## @param publicUrl veritable-ui external URL
+publicUrl: "http://localhost:3000"
 ## @param apiSwaggerBgColor veritable-ui swagger ackground color
 apiSwaggerBgColor: "#fafafa"
 ## @param apiSwaggerTitle veritable-ui swagger title

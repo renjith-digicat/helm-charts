@@ -83,6 +83,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `cookieSessionKeys.secret`              | veritable-ui secret vaapiSwaggerBgColorlue              | `["secret"]`                                                     |
 | `cookieSessionKeys.existingSecret`      | veritable-ui existing secret                            | `""`                                                             |
 | `cookieSessionKeys.existingSecretKey`   | veritable-ui existing secret key                        | `""`                                                             |
+| `publicUrl`                             | veritable-ui external URL                               | `http://localhost:3000`                                          |
 | `apiSwaggerBgColor`                     | veritable-ui swagger ackground color                    | `#fafafa`                                                        |
 | `apiSwaggerTitle`                       | veritable-ui swagger title                              | `Veritable`                                                      |
 | `apiSwaggerHeading`                     | veritable-ui swagger heading                            | `Veritable`                                                      |
