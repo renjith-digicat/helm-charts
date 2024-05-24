@@ -60,35 +60,48 @@ diagnosticMode:
   args:
     - infinity
 
-## @section veritable cloudagent config parameters
+## @section veritable UI config parameters
+## 
+## @param label veritable-ui label
+label: "veritable ui"
+## @param companysHouseApiKey.enabled Enable companys house secret
+## @param companysHouseApiKey.secret veritable-ui secret value
+## @param companysHouseApiKey.existingSecret veritable-ui existing secret
+## @param companysHouseApiKey.existingSecretKey veritable-ui existing secret key
 companysHouseApiKey:
   enabled: true
   secret: "companysHouseApiKey"
   existingSecret: ""
   existingSecretKey: ""
-
+## @param companys house api URL for retrieving company's details
 companysHouseApiUrl: "https://api.company-information.service.gov.uk"
+## @param logLevel veritable-ui logging level
 logLevel: "debug"
-
+## @param companysHouseApiKey.enabled Enable cookies session keys secret
+## @param cookieSessionKeys.secret veritable-ui secret value
+## @param cookieSessionKeys.existingSecret veritable-ui existing secret
+## @param cookieSessionKeys.existingSecretKey veritable-ui existing secret key
 cookieSessionKeys:
   enabled: true
   secret:
     - "secret"
   existingSecret: ""
   existingSecretKey: ""
-
-publicUrl: "http://localhost:3000"
 apiSwaggerBgColor: "#fafafa"
 apiSwaggerTitle: "Veritable"
 apiSwaggerHeading: "Veritable"
-
+## @param idpClientId veritable-ui required for authentication (keycloak)
 idpClientId: "veritable-ui"
+## @param idpPublicURLPrefix veritable-ui public realm
 idpPublicURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
+## @param idpInternalURLPrefix veritable-ui private/internal realm
 idpInternalURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
+## @param idpAuthPath veritable-ui IDP authentication path
 idpAuthPath: "/auth"
+## @param idpTokenPath veritable-ui IDP token path
 idpTokenPath: "/token"
+## @param idpJWKSPath veritable-ui IDP certs path
 idpJWKSPath: "/certs"
-
 ## Digital Catapult veritable-ui image
 ## ref: https://hub.docker.com/r/digicatapult/veritable-ui/tags/
 ## @param image.registry veritable-ui image registry
