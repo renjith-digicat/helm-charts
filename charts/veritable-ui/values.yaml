@@ -73,12 +73,12 @@ companysHouseApiKey:
   secret: "companysHouseApiKey"
   existingSecret: ""
   existingSecretKey: ""
-## @param companys house api URL for retrieving company's details
+## @param companysHouseApiUrl companys house api URL for retrieving company's details
 companysHouseApiUrl: "https://api.company-information.service.gov.uk"
 ## @param logLevel veritable-ui logging level
 logLevel: "debug"
-## @param companysHouseApiKey.enabled Enable cookies session keys secret
-## @param cookieSessionKeys.secret veritable-ui secret value
+## @param cookieSessionKeys.enabled Enable cookies session keys secret
+## @param cookieSessionKeys.secret veritable-ui secret vaapiSwaggerBgColorlue
 ## @param cookieSessionKeys.existingSecret veritable-ui existing secret
 ## @param cookieSessionKeys.existingSecretKey veritable-ui existing secret key
 cookieSessionKeys:
@@ -87,10 +87,13 @@ cookieSessionKeys:
     - "secret"
   existingSecret: ""
   existingSecretKey: ""
+## @param apiSwaggerBgColor veritable-ui swagger ackground color 
 apiSwaggerBgColor: "#fafafa"
+## @param apiSwaggerTitle veritable-ui swagger title
 apiSwaggerTitle: "Veritable"
+## @param apiSwaggerHeading veritable-ui swagger heading
 apiSwaggerHeading: "Veritable"
-## @param idpClientId veritable-ui required for authentication (keycloak)
+## @param idpClientId veritable-ui
 idpClientId: "veritable-ui"
 ## @param idpPublicURLPrefix veritable-ui public realm
 idpPublicURLPrefix: "http://localhost:3080/realms/veritable/protocol/openid-connect"
