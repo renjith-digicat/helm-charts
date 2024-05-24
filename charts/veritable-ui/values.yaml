@@ -119,7 +119,7 @@ idpJWKSPath: "/certs"
 image:
   registry: docker.io
   repository: digicatapult/veritable-ui
-  tag: v0.3.7
+  tag: v0.3.10
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
