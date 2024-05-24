@@ -158,7 +158,7 @@ containerPorts:
 ##
 livenessProbe:
   enabled: true
-  path: /connections
+  path: /connection
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 5
@@ -174,7 +174,7 @@ livenessProbe:
 ##
 readinessProbe:
   enabled: true
-  path: /connections
+  path: /connection
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -190,7 +190,7 @@ readinessProbe:
 ##
 startupProbe:
   enabled: true
-  path: /connections
+  path: /connection
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
