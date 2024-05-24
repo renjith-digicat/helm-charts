@@ -61,7 +61,7 @@ diagnosticMode:
     - infinity
 
 ## @section veritable UI config parameters
-## 
+##
 ## @param label veritable-ui label
 label: "veritable ui"
 ## @param companysHouseApiKey.enabled Enable companys house secret
@@ -87,7 +87,7 @@ cookieSessionKeys:
     - "secret"
   existingSecret: ""
   existingSecretKey: ""
-## @param apiSwaggerBgColor veritable-ui swagger ackground color 
+## @param apiSwaggerBgColor veritable-ui swagger ackground color
 apiSwaggerBgColor: "#fafafa"
 ## @param apiSwaggerTitle veritable-ui swagger title
 apiSwaggerTitle: "Veritable"
