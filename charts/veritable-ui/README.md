@@ -1,6 +1,6 @@
 # veritable-ui
 
-The veritable-ui is a component of the Sequence (veritable) ledger-based system. The veritable-ui responsible for matching orders, and transactions as well as indexing blocks locally, it exposes API for this purpose. See [https://github.com/digicatapult/veritable-documentation](https://github.com/digicatapult/veritable-documentation) for details.
+The veritable-ui is an UI for Veritable that manages connections. Utilizing TSOA, HTMX and @kitajs/html for JSX templating.
 
 ## TL;DR
 
@@ -29,8 +29,6 @@ $ helm install my-release digicatapult/veritable-ui
 ```
 
 The command deploys veritable-ui on the Kubernetes cluster in the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
-
-You will need to specify the `externalveritableIpfs` host and port as well as the `externalveritableIdentityService` host and port.
 
 > **Tip**: List all releases using `helm list`
 
