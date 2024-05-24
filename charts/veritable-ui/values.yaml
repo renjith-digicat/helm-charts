@@ -138,7 +138,7 @@ containerPorts:
 ## @param livenessProbe.successThreshold Success threshold for livenessProbe
 ##
 livenessProbe:
-  enabled: enabled
+  enabled: true
   path: /
   initialDelaySeconds: 10
   periodSeconds: 10
@@ -154,8 +154,8 @@ livenessProbe:
 ## @param readinessProbe.successThreshold Success threshold for readinessProbe
 ##
 readinessProbe:
-  enabled: false
-  path: /health
+  enabled: true
+  path: /
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -170,8 +170,8 @@ readinessProbe:
 ## @param startupProbe.successThreshold Success threshold for startupProbe
 ##
 startupProbe:
-  enabled: false
-  path: /health
+  enabled: true
+  path: /
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
