@@ -157,7 +157,10 @@ spec:
           {{- end }}
           env:
             - name: COOKIE_SESSION_KEYS
-              value: {{ .Values.cookieSessionKeys.secret | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-ui.cookieSessionKeysSecretName" . }}
+                  key: {{ include "veritable-ui.cookieSessionKeysSecretKey" . }}
             - name: PUBLIC_URL
               value: {{ .Values.publicUrl | quote }}
             - name: API_SWAGGER_BG_COLOR
