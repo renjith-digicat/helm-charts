@@ -1,0 +1,27 @@
+annotations:
+  category: veritable
+  licenses: Apache-2.0
+apiVersion: v2
+appVersion: v0.3.10
+dependencies:
+  - condition: postgresql.enabled
+    name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 15.x.x
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 2.x.x
+description: The veritable user interface for managing connections
+home: https://github.com/digicatapult/veritable-ui
+keywords:
+  - veritable
+maintainers:
+  - name: digicatapult  # Digital Catapult
+    url: https://github.com/digicatapult/helm-charts
+    email: opensource@digicatapult.org.uk
+name: veritable-ui
+sources:
+  - https://github.com/digicatapult/veritable-ui
+version: 1.0.0
