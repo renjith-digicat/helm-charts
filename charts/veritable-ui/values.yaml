@@ -444,8 +444,6 @@ ingress:
   ##   - path: /
   ##     pathType: Prefix
   paths:
-    - path: /connection
-      pathType: Prefix
     - path: /
       pathType: Prefix
   ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
