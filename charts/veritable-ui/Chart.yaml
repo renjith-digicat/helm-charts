@@ -15,7 +15,6 @@ dependencies:
     version: 2.x.x
 description: The veritable user interface for managing connections
 home: https://github.com/digicatapult/veritable-ui
-icon: https://raw.githubusercontent.com/digicatapult/sqnc-documentation/main/assets/icon.png
 keywords:
   - veritable
 maintainers:
