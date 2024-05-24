@@ -10,3 +10,4 @@ A collection of [helm](https://helm.sh) charts created by [Digital Catapult](htt
 * [sqnc-matchmaker-api](charts/sqnc-matchmacker-api/README.md) - Deploy sqnc-matchmaker-api service
 * [sqnc-node](charts/sqnc-node/README.md) - Deploy sqnc-node
 * [veritable-cloudagent](charts/veritable-cloudagent/README.md) - Deploy the veritable-cloudagent
+* [veritable-ui](charts/veritable-ui/README.md) - Deploy the veritable-ui
