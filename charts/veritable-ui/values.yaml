@@ -105,6 +105,7 @@ idpAuthPath: "/auth"
 idpTokenPath: "/token"
 ## @param idpJWKSPath veritable-ui IDP certs path
 idpJWKSPath: "/certs"
+## @section veritable-ui deployment parameters
 ## Digital Catapult veritable-ui image
 ## ref: https://hub.docker.com/r/digicatapult/veritable-ui/tags/
 ## @param image.registry veritable-ui image registry
@@ -155,7 +156,7 @@ containerPorts:
 ##
 livenessProbe:
   enabled: true
-  path: /
+  path: /connections
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 5
@@ -171,7 +172,7 @@ livenessProbe:
 ##
 readinessProbe:
   enabled: true
-  path: /
+  path: /connections
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -187,7 +188,7 @@ readinessProbe:
 ##
 startupProbe:
   enabled: true
-  path: /
+  path: /connections
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
