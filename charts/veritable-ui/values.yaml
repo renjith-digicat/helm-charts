@@ -594,7 +594,7 @@ initDbMigrate:
   args:
     - "migrate:latest"
     - "--knexfile"
-    - "build/lib/db/knexfile.js"
+    - "build/models/db/knexfile.js"
 
 ## ServiceAccount configuration
 ##
