@@ -2,7 +2,7 @@ annotations:
   category: veritable
   licenses: Apache-2.0
 apiVersion: v2
-appVersion: v0.3.13
+appVersion: v0.3.14
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
