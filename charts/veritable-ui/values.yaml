@@ -107,6 +107,23 @@ idpAuthPath: "/auth"
 idpTokenPath: "/token"
 ## @param idpJWKSPath veritable-ui IDP certs path
 idpJWKSPath: "/certs"
+## @param emailTransport The email transport method to use, current options only STREAM
+emailTransport: "STREAM"
+## @param emailFromAddress veritable-ui email from address
+emailFromAddress: "hello@veritable.com"
+## @param emailAdminAddress veritable-ui email admin address
+emailAdminAddress: "admin@veritable.com"
+## @param cloudagentAdminOrigin veritable-ui cloudagent admin origin URL
+cloudagentAdminOrigin: "http://localhost:3080"
+## @param invitationPin.enabled Enable Invitation pin secret
+## @param invitationPin.secret the secret value
+## @param invitationPin.existingSecret If there is an existing secret for the invitationPin
+## @param invitationPin.existingSecretKey the key to use within the existing secret
+invitationPin:
+  enabled: true
+  secret: ""
+  existingSecret: ""
+  existingSecretKey: ""
 ## @section veritable-ui deployment parameters
 ## Digital Catapult veritable-ui image
 ## ref: https://hub.docker.com/r/digicatapult/veritable-ui/tags/
@@ -121,7 +138,7 @@ idpJWKSPath: "/certs"
 image:
   registry: docker.io
   repository: digicatapult/veritable-ui
-  tag: v0.3.14
+  tag: v0.3.17
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -559,12 +576,12 @@ ingress:
 initDbCreate:
   ## PostreSQL image
   ## ref: https://hub.docker.com/_/postgres/tags/
-  ## @param initDbCreate.image.registry sqnc-routing-service image registry
-  ## @param initDbCreate.image.repository sqnc-routing-service image repository
-  ## @param initDbCreate.image.tag sqnc-routing-service image tag (immutable tags are recommended)
-  ## @param initDbCreate.image.digest sqnc-routing-service image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
-  ## @param initDbCreate.image.pullPolicy sqnc-routing-service image pull policy
-  ## @param initDbCreate.image.pullSecrets sqnc-routing-service image pull secrets
+  ## @param initDbCreate.image.registry Postgres image registry
+  ## @param initDbCreate.image.repository postgres image repository
+  ## @param initDbCreate.image.tag postgres image tag (immutable tags are recommended)
+  ## @param initDbCreate.image.digest postgres image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended)
+  ## @param initDbCreate.image.pullPolicy postgres image pull policy
+  ## @param initDbCreate.image.pullSecrets postgres image pull secrets
   ##
   image:
     registry: docker.io

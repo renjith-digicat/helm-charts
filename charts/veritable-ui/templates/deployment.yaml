@@ -207,6 +207,19 @@ spec:
                 secretKeyRef:
                   name: {{ include "veritable-ui.databaseSecretName" . }}
                   key: {{ include "veritable-ui.databaseSecretPasswordKey" . }}
+            - name: EMAIL_TRANSPORT
+              value: {{ .Values.emailTransport | quote }}
+            - name: EMAIL_FROM_ADDRESS
+              value: {{ .Values.emailFromAddress | quote }}
+            - name: EMAIL_ADMIN_ADDRESS
+              value: {{ .Values.emailAdminAddress | quote }}
+            - name: CLOUDAGENT_ADMIN_ORIGIN
+              value: {{ .Values.cloudagentAdminOrigin | quote }}
+            - name: INVITATION_PIN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "veritable-ui.invitationPinSecretName" . }}
+                  key: {{ include "veritable-ui.invitationPinSecretKey" . }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

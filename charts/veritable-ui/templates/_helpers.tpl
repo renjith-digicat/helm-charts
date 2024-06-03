@@ -61,6 +61,35 @@ Add environment variables to configure cookie session keys
 {{- end -}}
 {{- end -}}
 
+{{/*
+Create a default fully qualified app name for the session cookies.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "veritable-ui.invitationPin.fullname" -}}
+{{- printf "%s-invitation-pin" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-"  -}}
+{{- end -}}
+
+{{/*
+Return the invitation pin Secret Name
+*/}}
+{{- define "veritable-ui.invitationPinSecretName" -}}
+{{- if .Values.invitationPin.existingSecret -}}
+    {{- tpl .Values.invitationPin.existingSecret $ -}}
+{{- else -}}
+    {{- include "veritable-ui.invitationPin.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure invitation pin keys 
+*/}}
+{{- define "veritable-ui.invitationPinSecretKey" -}}
+{{- if .Values.invitationPin.existingSecretKey -}}
+    {{- printf "%s" .Values.invitationPin.existingSecretKey -}}
+{{- else -}}
+    {{- print "pin" -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Create a default fully qualified app name for the company house.
@@ -223,6 +252,8 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := list -}}
 {{- $messages := append $messages (include "veritable-ui.validateValues.databaseName" .) -}}
 {{- $messages := append $messages (include "veritable-ui.validateValues.databaseUser" .) -}}
+{{- $messages := append $messages (include "veritable-ui.validateSecretKeys" .) -}}
+{{- $messages := append $messages (include "veritable-ui.validateSecretValues" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
@@ -249,6 +280,50 @@ veritable-ui:
 {{- if not (regexMatch "^[a-zA-Z_]+$" $db_user) -}}
 veritable-ui:
     When creating a database the username must consist of the characters a-z, A-Z and _ only
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Validate if secret keys are being set or if a pre-existing secret is being used*/}}
+{{- define "veritable-ui.validateSecretKeys" -}}
+{{- if .Values.cookieSessionKeys.existingSecret -}}
+{{- if not .Values.cookieSessionKeys.existingSecretKey -}}
+veritable-ui:
+    If an existing secret is being used for the cookie session keys, a key must be provided
+{{- end -}}
+{{- end -}}
+{{- if .Values.invitationPin.existingSecret -}}
+{{- if not .Values.invitationPin.existingSecretKey -}}
+veritable-ui:
+    If an existing secret is being used for the invitation pin, a key must be provided
+{{- end -}}
+{{- end -}}
+{{- if .Values.companysHouseApiKey.existingSecret -}}
+{{- if not .Values.companysHouseApiKey.existingSecretKey -}}
+veritable-ui:
+    If an existing secret is being used for the company house api key, a key must be provided
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Validate if the value of a secret is being set, if it is not, the existing secret must be set instead*/}}
+{{- define "veritable-ui.validateSecretValues" -}}
+{{- if not .Values.cookieSessionKeys.existingSecret -}}
+{{- if not .Values.cookieSessionKeys.secret -}}
+veritable-ui:
+    If a secret is not being used for the cookie session keys, a value must be provided
+{{- end -}}
+{{- end -}}
+{{- if not .Values.invitationPin.existingSecret -}}
+{{- if not .Values.invitationPin.secret -}}
+veritable-ui:
+    If a secret is not being used for the invitation pin, a value must be provided
+{{- end -}}
+{{- end -}}
+{{- if not .Values.companysHouseApiKey.existingSecret -}}
+{{- if not .Values.companysHouseApiKey.secret -}}
+veritable-ui:
+    If a secret is not being used for the company house api key, a value must be provided
 {{- end -}}
 {{- end -}}
 {{- end -}}
