@@ -100,7 +100,7 @@ backupBeforeStorageUpdate: false
 ## @param connectionImageUrl veritable-cloudagent connection image url
 connectionImageUrl: ""
 ## @param webhookUrl veritable-cloudagent web hook url
-webhookUrl: ""
+webhookUrl: [""]
 ## @param adminPort veritable-cloudagent admin port
 adminPort: 3000
 ## @param ipfsExternalOrigin veritable-cloudagent ipfs external origin url (if ipfs.enabled is set to true then we will always point to http://localhost:5001)

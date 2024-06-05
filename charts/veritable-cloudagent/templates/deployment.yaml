@@ -173,7 +173,7 @@ spec:
             {{- end }}
             {{- if .Values.webhookUrl }}
             - name: AFJ_REST_WEBHOOK_URL
-              value: {{ .Values.webhookUrl | quote }}
+              value: {{ join " " .Values.webhookUrl | quote }}
             {{- end }}
             - name: AFJ_REST_ADMIN_PORT
               value: {{ .Values.adminPort | quote }}
