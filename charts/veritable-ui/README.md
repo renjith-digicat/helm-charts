@@ -70,29 +70,37 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### veritable UI config parameters
 
-| Name                                    | Description                                             | Value                                                            |
-| --------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------- |
-| `label`                                 | veritable-ui label                                      | `veritable ui`                                                   |
-| `companysHouseApiKey.enabled`           | Enable companys house secret                            | `true`                                                           |
-| `companysHouseApiKey.secret`            | veritable-ui secret value                               | `companysHouseApiKey`                                            |
-| `companysHouseApiKey.existingSecret`    | veritable-ui existing secret                            | `""`                                                             |
-| `companysHouseApiKey.existingSecretKey` | veritable-ui existing secret key                        | `""`                                                             |
-| `companysHouseApiUrl`                   | companys house api URL for retrieving company's details | `https://api.company-information.service.gov.uk`                 |
-| `logLevel`                              | veritable-ui logging level                              | `debug`                                                          |
-| `cookieSessionKeys.enabled`             | Enable cookies session keys secret                      | `true`                                                           |
-| `cookieSessionKeys.secret`              | veritable-ui secret vaapiSwaggerBgColorlue              | `["secret"]`                                                     |
-| `cookieSessionKeys.existingSecret`      | veritable-ui existing secret                            | `""`                                                             |
-| `cookieSessionKeys.existingSecretKey`   | veritable-ui existing secret key                        | `""`                                                             |
-| `publicUrl`                             | veritable-ui external URL                               | `http://localhost:3080`                                          |
-| `apiSwaggerBgColor`                     | veritable-ui swagger ackground color                    | `#fafafa`                                                        |
-| `apiSwaggerTitle`                       | veritable-ui swagger title                              | `Veritable`                                                      |
-| `apiSwaggerHeading`                     | veritable-ui swagger heading                            | `Veritable`                                                      |
-| `idpClientId`                           | veritable-ui                                            | `veritable-ui`                                                   |
-| `idpPublicURLPrefix`                    | veritable-ui public realm                               | `http://localhost:3080/realms/veritable/protocol/openid-connect` |
-| `idpInternalURLPrefix`                  | veritable-ui private/internal realm                     | `http://localhost:3080/realms/veritable/protocol/openid-connect` |
-| `idpAuthPath`                           | veritable-ui IDP authentication path                    | `/auth`                                                          |
-| `idpTokenPath`                          | veritable-ui IDP token path                             | `/token`                                                         |
-| `idpJWKSPath`                           | veritable-ui IDP certs path                             | `/certs`                                                         |
+| Name                                    | Description                                                    | Value                                                            |
+| --------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `label`                                 | veritable-ui label                                             | `veritable ui`                                                   |
+| `companysHouseApiKey.enabled`           | Enable companys house secret                                   | `true`                                                           |
+| `companysHouseApiKey.secret`            | veritable-ui secret value                                      | `companysHouseApiKey`                                            |
+| `companysHouseApiKey.existingSecret`    | veritable-ui existing secret                                   | `""`                                                             |
+| `companysHouseApiKey.existingSecretKey` | veritable-ui existing secret key                               | `""`                                                             |
+| `companysHouseApiUrl`                   | companys house api URL for retrieving company's details        | `https://api.company-information.service.gov.uk`                 |
+| `logLevel`                              | veritable-ui logging level                                     | `debug`                                                          |
+| `cookieSessionKeys.enabled`             | Enable cookies session keys secret                             | `true`                                                           |
+| `cookieSessionKeys.secret`              | veritable-ui secret vaapiSwaggerBgColorlue                     | `["secret"]`                                                     |
+| `cookieSessionKeys.existingSecret`      | veritable-ui existing secret                                   | `""`                                                             |
+| `cookieSessionKeys.existingSecretKey`   | veritable-ui existing secret key                               | `""`                                                             |
+| `publicUrl`                             | veritable-ui external URL                                      | `http://localhost:3080`                                          |
+| `apiSwaggerBgColor`                     | veritable-ui swagger ackground color                           | `#fafafa`                                                        |
+| `apiSwaggerTitle`                       | veritable-ui swagger title                                     | `Veritable`                                                      |
+| `apiSwaggerHeading`                     | veritable-ui swagger heading                                   | `Veritable`                                                      |
+| `idpClientId`                           | veritable-ui                                                   | `veritable-ui`                                                   |
+| `idpPublicURLPrefix`                    | veritable-ui public realm                                      | `http://localhost:3080/realms/veritable/protocol/openid-connect` |
+| `idpInternalURLPrefix`                  | veritable-ui private/internal realm                            | `http://localhost:3080/realms/veritable/protocol/openid-connect` |
+| `idpAuthPath`                           | veritable-ui IDP authentication path                           | `/auth`                                                          |
+| `idpTokenPath`                          | veritable-ui IDP token path                                    | `/token`                                                         |
+| `idpJWKSPath`                           | veritable-ui IDP certs path                                    | `/certs`                                                         |
+| `emailTransport`                        | The email transport method to use, current options only STREAM | `STREAM`                                                         |
+| `emailFromAddress`                      | veritable-ui email from address                                | `hello@veritable.com`                                            |
+| `emailAdminAddress`                     | veritable-ui email admin address                               | `admin@veritable.com`                                            |
+| `cloudagentAdminOrigin`                 | veritable-ui cloudagent admin origin URL                       | `http://localhost:3080`                                          |
+| `invitationPin.enabled`                 | Enable Invitation pin secret                                   | `true`                                                           |
+| `invitationPin.secret`                  | the secret value                                               | `""`                                                             |
+| `invitationPin.existingSecret`          | If there is an existing secret for the invitationPin           | `""`                                                             |
+| `invitationPin.existingSecretKey`       | the key to use within the existing secret                      | `""`                                                             |
 
 ### veritable-ui deployment parameters
 
@@ -100,7 +108,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
 | `image.registry`                                  | veritable-ui image registry                                                                                                                             | `docker.io`                 |
 | `image.repository`                                | veritable-ui image repository                                                                                                                           | `digicatapult/veritable-ui` |
-| `image.tag`                                       | veritable-ui image tag (immutable tags are recommended)                                                                                                 | `v0.3.14`                   |
+| `image.tag`                                       | veritable-ui image tag (immutable tags are recommended)                                                                                                 | `v0.3.17`                   |
 | `image.digest`                                    | veritable-ui image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended) | `""`                        |
 | `image.pullPolicy`                                | veritable-ui image pull policy                                                                                                                          | `IfNotPresent`              |
 | `image.pullSecrets`                               | veritable-ui image pull secrets                                                                                                                         | `[]`                        |
@@ -206,21 +214,21 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Init Container Parameters
 
-| Name                                          | Description                                                                                                                                                     | Value                                                        |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `initDbCreate.image.registry`                 | sqnc-routing-service image registry                                                                                                                             | `docker.io`                                                  |
-| `initDbCreate.image.repository`               | sqnc-routing-service image repository                                                                                                                           | `postgres`                                                   |
-| `initDbCreate.image.tag`                      | sqnc-routing-service image tag (immutable tags are recommended)                                                                                                 | `16-alpine`                                                  |
-| `initDbCreate.image.digest`                   | sqnc-routing-service image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended) | `""`                                                         |
-| `initDbCreate.image.pullPolicy`               | sqnc-routing-service image pull policy                                                                                                                          | `IfNotPresent`                                               |
-| `initDbCreate.image.pullSecrets`              | sqnc-routing-service image pull secrets                                                                                                                         | `[]`                                                         |
-| `initDbMigrate.enable`                        | Run database migration in an init container                                                                                                                     | `true`                                                       |
-| `initDbMigrate.environment`                   | Database configuration environment to run database into                                                                                                         | `production`                                                 |
-| `initDbMigrate.args`                          | Argument to pass to knex to migrate the database                                                                                                                | `["migrate:latest","--knexfile","build/lib/db/knexfile.js"]` |
-| `serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                                                            | `true`                                                       |
-| `serviceAccount.name`                         | The name of the ServiceAccount to use.                                                                                                                          | `""`                                                         |
-| `serviceAccount.annotations`                  | Additional Service Account annotations (evaluated as a template)                                                                                                | `{}`                                                         |
-| `serviceAccount.automountServiceAccountToken` | Automount service account token for the server service account                                                                                                  | `true`                                                       |
+| Name                                          | Description                                                                                                                                         | Value                                                           |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `initDbCreate.image.registry`                 | Postgres image registry                                                                                                                             | `docker.io`                                                     |
+| `initDbCreate.image.repository`               | postgres image repository                                                                                                                           | `postgres`                                                      |
+| `initDbCreate.image.tag`                      | postgres image tag (immutable tags are recommended)                                                                                                 | `16-alpine`                                                     |
+| `initDbCreate.image.digest`                   | postgres image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended) | `""`                                                            |
+| `initDbCreate.image.pullPolicy`               | postgres image pull policy                                                                                                                          | `IfNotPresent`                                                  |
+| `initDbCreate.image.pullSecrets`              | postgres image pull secrets                                                                                                                         | `[]`                                                            |
+| `initDbMigrate.enable`                        | Run database migration in an init container                                                                                                         | `true`                                                          |
+| `initDbMigrate.environment`                   | Database configuration environment to run database into                                                                                             | `production`                                                    |
+| `initDbMigrate.args`                          | Argument to pass to knex to migrate the database                                                                                                    | `["migrate:latest","--knexfile","build/models/db/knexfile.js"]` |
+| `serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                                                | `true`                                                          |
+| `serviceAccount.name`                         | The name of the ServiceAccount to use.                                                                                                              | `""`                                                            |
+| `serviceAccount.annotations`                  | Additional Service Account annotations (evaluated as a template)                                                                                    | `{}`                                                            |
+| `serviceAccount.automountServiceAccountToken` | Automount service account token for the server service account                                                                                      | `true`                                                          |
 
 ### Database Parameters
 
