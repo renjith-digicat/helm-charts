@@ -1,12 +1,12 @@
 dependencies:
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
-  version: 17.0.2
+  version: 18.0.2
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
-  version: 17.0.2
+  version: 18.0.2
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 2.19.2
-digest: sha256:e539d852ba97f1cd9c2c62501739de6465f742e9a951cddb2ca77f51ba37b309
-generated: "2024-05-20T15:40:52.982443596Z"
+  version: 2.20.2
+digest: sha256:849bcf36fe58b31dd5754272174ce483efa5fbf86c4e4f3a3938a6c268cd3f46
+generated: "2024-06-10T15:41:06.786738875Z"
