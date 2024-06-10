@@ -209,7 +209,7 @@ ipfs:
 image:
   registry: docker.io
   repository: digicatapult/veritable-cloudagent
-  tag: v0.7.20
+  tag: v0.9.0
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -614,25 +614,25 @@ ingress:
   ##   - path: /
   ##     pathType: Prefix
   paths:
-    - path: /access
+    - path: /v1/access
       pathType: Prefix
-    - path: /agent
+    - path: /v1/agent
       pathType: Prefix
-    - path: /schemas
+    - path: /v1/schemas
       pathType: Prefix
-    - path: /dids
+    - path: /v1/dids
       pathType: Prefix
-    - path: /proofs
+    - path: /v1/proofs
       pathType: Prefix
-    - path: /credentials
+    - path: /v1/credentials
       pathType: Prefix
-    - path: /connections
+    - path: /v1/connections
       pathType: Prefix
-    - path: /oob
+    - path: /v1/oob
       pathType: Prefix
-    - path: /credential-definitions
+    - path: /v1/credential-definitions
       pathType: Prefix
-    - path: /basic-messages
+    - path: /v1/basic-messages
       pathType: Prefix
   ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
   ## Use this parameter to set the required annotations for cert-manager, see
