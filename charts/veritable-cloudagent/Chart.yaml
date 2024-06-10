@@ -3,7 +3,7 @@ annotations:
   licenses: Apache-2.0
 apiVersion: v2
 # renovate: image=digicatapult/veritable-cloudagent
-appVersion: v0.7.20
+appVersion: v0.9.1
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
@@ -26,4 +26,4 @@ maintainers:
 name: veritable-cloudagent
 sources:
   - https://github.com/digicatapult/veritable-cloudagent
-version: 1.0.3
+version: 1.0.4
