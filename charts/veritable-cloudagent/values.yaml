@@ -250,7 +250,7 @@ containerPorts:
 ##
 livenessProbe:
   enabled: true
-  path: /agent
+  path: /health
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 5
@@ -266,7 +266,7 @@ livenessProbe:
 ##
 readinessProbe:
   enabled: true
-  path: /agent
+  path: /health
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 5
@@ -282,7 +282,7 @@ readinessProbe:
 ##
 startupProbe:
   enabled: false
-  path: /agent
+  path: /health
   initialDelaySeconds: 30
   periodSeconds: 10
   timeoutSeconds: 5
