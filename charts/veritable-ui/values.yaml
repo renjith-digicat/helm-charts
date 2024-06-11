@@ -115,6 +115,8 @@ emailFromAddress: "hello@veritable.com"
 emailAdminAddress: "admin@veritable.com"
 ## @param cloudagentAdminOrigin veritable-ui cloudagent admin origin URL
 cloudagentAdminOrigin: "http://localhost:3080"
+## @param invitationFromCompanyNumber Companies House number to claim created invitations are from
+invitationFromCompanyNumber: "00000000"
 ## @param invitationPin.enabled Enable Invitation pin secret
 ## @param invitationPin.secret the secret value
 ## @param invitationPin.existingSecret If there is an existing secret for the invitationPin
@@ -138,7 +140,7 @@ invitationPin:
 image:
   registry: docker.io
   repository: digicatapult/veritable-ui
-  tag: v0.3.17
+  tag: v0.4.0
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -586,7 +588,7 @@ initDbCreate:
   image:
     registry: docker.io
     repository: postgres
-    tag: '16-alpine'
+    tag: "16-alpine"
     digest: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -610,8 +612,6 @@ initDbMigrate:
   environment: production
   args:
     - "migrate:latest"
-    - "--knexfile"
-    - "build/models/db/knexfile.js"
 
 ## ServiceAccount configuration
 ##
