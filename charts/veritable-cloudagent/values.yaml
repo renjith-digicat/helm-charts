@@ -75,15 +75,15 @@ walletKey:
   existingSecretKey: ""
 ## @param storageType veritable-cloudagent storage type (can be either postgres sqlite)
 storageType: "postgres"
-## @param endpoint an array of veritable-cloudagent endpoints to be used in creating invitations in the format http(s)://FQDN:PORT or ws(s)://FQDN:PORT - only the first option in the array is actually used
-endpoint: ["http://localhost:5002"]
+## @param endpoint an array of veritable-cloudagent endpoints to be used in creating invitations in the format http(s)://FQDN:PORT or ws(s)://FQDN:PORT - only the first option in the array is actually used, provide in a string, comma delimited
+endpoint: "http://localhost:5002"
 ## @param logLevel veritable-cloudagent log level from 1 to 5
 logLevel: 3
 ## @param useDidSovPrefixWhereAllowed veritable-cloudagent use did sov prefix where allowed
 useDidSovPrefixWhereAllowed: false
 ## @param useDidKeyInProtocols veritable-cloudagent use did key in protocols
 useDidKeyInProtocols: true
-## @param outboundTransport choice of outbound transport mechanisms for veritable-cloudagent can be http, ws, or both in an array
+## @param outboundTransport choice of outbound transport mechanisms for veritable-cloudagent can be http, ws, or both in a comma delimited string
 outboundTransport: "http"
 ## @param autoAcceptConnections veritable-cloudagent auto accept connections
 autoAcceptConnections: false
@@ -99,8 +99,8 @@ autoUpdateStorageOnStartup: true
 backupBeforeStorageUpdate: false
 ## @param connectionImageUrl veritable-cloudagent connection image url
 connectionImageUrl: ""
-## @param webhookUrl veritable-cloudagent web hook url
-webhookUrl: [""]
+## @param webhookUrl veritable-cloudagent web hook url, provide in a string, comma delimited
+webhookUrl: ""
 ## @param adminPort veritable-cloudagent admin port
 adminPort: 3000
 ## @param ipfsExternalOrigin veritable-cloudagent ipfs external origin url (if ipfs.enabled is set to true then we will always point to http://localhost:5001)
@@ -209,7 +209,7 @@ ipfs:
 image:
   registry: docker.io
   repository: digicatapult/veritable-cloudagent
-  tag: v0.9.1
+  tag: v0.9.15
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
