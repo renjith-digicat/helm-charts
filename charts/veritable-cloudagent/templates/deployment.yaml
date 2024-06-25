@@ -133,7 +133,7 @@ spec:
             - name: VERITABLE_DEBUG
               value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
             - name: INBOUND_TRANSPORT
-              value: `[{"transport":"http","port": {{ .Values.containerPorts.http }}}, {"transport":"ws","port": {{ .Values.containerPorts.ws }}}]`
+              value: '[{"transport":"http","port": {{ .Values.containerPorts.http }}}, {"transport":"ws","port": {{ .Values.containerPorts.ws }}}]'
             - name: LABEL
               value: {{ .Values.label | quote }}
             - name: WALLET_ID
