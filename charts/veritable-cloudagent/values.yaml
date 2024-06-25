@@ -99,7 +99,7 @@ autoUpdateStorageOnStartup: true
 backupBeforeStorageUpdate: false
 ## @param connectionImageUrl veritable-cloudagent connection image url
 connectionImageUrl: ""
-## @param webhookUrl veritable-cloudagent web hook url, provide in a string, comma delimited 
+## @param webhookUrl veritable-cloudagent web hook url, provide in a string, comma delimited
 webhookUrl: ""
 ## @param adminPort veritable-cloudagent admin port
 adminPort: 3000
