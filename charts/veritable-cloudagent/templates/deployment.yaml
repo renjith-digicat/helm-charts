@@ -132,65 +132,65 @@ spec:
           env:
             - name: VERITABLE_DEBUG
               value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
-            - name: AFJ_REST_INBOUND_TRANSPORTS
+            - name: INBOUND_TRANSPORT
               value: "http {{ .Values.containerPorts.http }} ws {{ .Values.containerPorts.ws }}"
-            - name: AFJ_REST_LABEL
+            - name: LABEL
               value: {{ .Values.label | quote }}
-            - name: AFJ_REST_WALLET_ID
+            - name: WALLET_ID
               value: {{ .Values.walletId | quote }}
-            - name: AFJ_REST_WALLET_KEY
+            - name: WALLET_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ include "veritable-cloudagent.walletSecretName" . }}
                   key: {{ include "veritable-cloudagent.walletSecretKey" . }}
-            - name: AFJ_REST_STORAGE_TYPE
+            - name: STORAGE_TYPE
               value: {{ .Values.storageType | quote }}
-            - name: AFJ_REST_ENDPOINT
+            - name: ENDPOINT
               value: {{ .Values.endpoint | quote }}
-            - name: AFJ_REST_LOG_LEVEL
+            - name: LOG_LEVEL
               value: {{ .Values.logLevel | quote }}
-            - name: AFJ_REST_USE_DID_SOV_PREFIX_WHERE_ALLOWED
+            - name: USE_DID_SOV_PREFIX_WHERE_ALLOWED
               value: {{ .Values.useDidSovPrefixWhereAllowed | quote }}
-            - name: AFJ_REST_USE_DID_KEY_IN_PROTOCOLS
+            - name: USE_DID_KEY_IN_PROTOCOLS
               value: {{ .Values.useDidKeyInProtocols | quote }}
-            - name: AFJ_REST_OUTBOUND_TRANSPORT
+            - name: OUTBOUND_TRANSPORT
               value: {{ .Values.outboundTransport | quote }}
-            - name: AFJ_REST_AUTO_ACCEPT_CONNECTIONS
+            - name: AUTO_ACCEPT_CONNECTIONS
               value: {{ .Values.autoAcceptConnections | quote }}
-            - name: AFJ_REST_AUTO_ACCEPT_CREDENTIALS
+            - name: AUTO_ACCEPT_CREDENTIALS
               value: {{ .Values.autoAcceptCredentials | quote }}
-            - name: AFJ_REST_AUTO_ACCEPT_MEDIATION_REQUESTS
+            - name: AUTO_ACCEPT_MEDIATION_REQUESTS
               value: {{ .Values.autoAcceptMediationRequests | quote }}
-            - name: AFJ_REST_AUTO_ACCEPT_PROOFS
+            - name: AUTO_ACCEPT_PROOFS
               value: {{ .Values.autoAcceptProofs | quote }}
-            - name: AFJ_REST_AUTO_UPDATE_STORAGE_ON_STARTUP
+            - name: AUTO_UPDATE_STORAGE_ON_STARTUP
               value: {{ .Values.autoUpdateStorageOnStartup | quote }}
-            - name: AFJ_REST_BACKUP_BEFORE_STORAGE_UPDATE
+            - name: BACKUP_BEFORE_STORAGE_UPDATE
               value: {{ .Values.backupBeforeStorageUpdate | quote }}
             {{- if .Values.connectionImageUrl }}
-            - name: AFJ_REST_CONNECTION_IMAGE_URL
+            - name: CONNECTION_IMAGE_URL
               value: {{ .Values.connectionImageUrl | quote }}
             {{- end }}
             {{- if .Values.webhookUrl }}
-            - name: AFJ_REST_WEBHOOK_URL
-              value: {{ join " " .Values.webhookUrl | quote }}
+            - name: WEBHOOK_URL
+              value: {{.Values.webhookUrl | quote }}
             {{- end }}
-            - name: AFJ_REST_ADMIN_PORT
+            - name: ADMIN_PORT
               value: {{ .Values.adminPort | quote }}
-            - name: AFJ_REST_IPFS_ORIGIN
+            - name: IPFS_ORIGIN
             {{- if .Values.ipfs.enabled }}
               value: "http://localhost:{{ .Values.ipfs.containerPorts.api }}"
             {{- else }}
               value: {{ .Values.ipfsExternalOrigin | quote }}
             {{- end }}
             {{- if eq .Values.storageType "postgres" }}
-            - name: AFJ_REST_POSTGRES_HOST
+            - name: POSTGRES_HOST
               value: {{ template "veritable-cloudagent.databaseHost" . }}
-            - name: AFJ_REST_POSTGRES_PORT
+            - name: POSTGRES_PORT
               value: {{ template "veritable-cloudagent.databasePort" . }}
-            - name: AFJ_REST_POSTGRES_USERNAME
+            - name: POSTGRES_USERNAME
               value: {{ template "veritable-cloudagent.databaseUser" . }}
-            - name: AFJ_REST_POSTGRES_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "veritable-cloudagent.databaseSecretName" . }}
