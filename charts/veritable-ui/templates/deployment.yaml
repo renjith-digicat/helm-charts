@@ -66,7 +66,7 @@ spec:
       {{- if .Values.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- end }}
-      {{- if or .Values.initContainers .Values.initDbMigrate.enable (and (not .Values.postgresql.enabled) .Values.externalDatabase.create) }}
+      {{- if or .Values.initContainers .Values.initDbMigrate.enabled .Values.initIssueancePolicy.enabled (and (not .Values.postgresql.enabled) .Values.externalDatabase.create) }}
       initContainers:
         {{- if and (not .Values.postgresql.enabled) .Values.externalDatabase.create }}
         - name: database-create 
@@ -109,7 +109,7 @@ spec:
               psql $CONN_FLAGS -c "ALTER ROLE $DB_USERNAME WITH PASSWORD \$$$PSQL_ESC\$$$DB_PASSWORD\$$$PSQL_ESC\$";
               createdb $CONN_FLAGS -O $DB_USERNAME $DB_NAME;
         {{- end }}
-        {{- if .Values.initDbMigrate.enable }}
+        {{- if .Values.initDbMigrate.enabled }}
         - name: database-migrate
           image: {{ template "veritable-ui.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -133,6 +133,26 @@ spec:
                 secretKeyRef:
                   name: {{ include "veritable-ui.databaseSecretName" . }}
                   key: {{ include "veritable-ui.databaseSecretPasswordKey" . }}
+        {{- end }}
+        {{- if .Values.initIssuancePolicy.enabled }}
+        - name: issueance-policies
+          image: {{ template "veritable-ui.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ['npm', 'run', 'init']
+          {{- if .Values.initIssuancePolicy.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.initIssuancePolicy.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: CLOUDAGENT_ADMIN_ORIGIN
+              value: {{ include "veritable-ui.cloudagentAdminHttpUri" . | quote }}
+            - name: LOG_LEVEL
+              value: {{ .Values.initIssuancePolicy.logLevel | quote }}
+            - name: ISSUANCE_DID_POLICY
+              value: {{ .Values.initIssuancePolicy.didPolicy | quote }}
+            - name: ISSUANCE_SCHEMA_POLICY
+              value: {{ .Values.initIssuancePolicy.schemaPolicy | quote }}
+            - name: ISSUANCE_CRED_DEF_POLICY
+              value: {{ .Values.initIssuancePolicy.credentialPolicy | quote }}
         {{- end }}
         {{- if .Values.initContainers }}
           {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
@@ -213,8 +233,10 @@ spec:
               value: {{ .Values.emailFromAddress | quote }}
             - name: EMAIL_ADMIN_ADDRESS
               value: {{ .Values.emailAdminAddress | quote }}
+            - name: CLOUDAGENT_ADMIN_WS_ORIGIN
+              value: {{ include "veritable-ui.cloudagentAdminWsUri" . | quote }}
             - name: CLOUDAGENT_ADMIN_ORIGIN
-              value: {{ .Values.cloudagentAdminOrigin | quote }}
+              value: {{ include "veritable-ui.cloudagentAdminHttpUri" . | quote }}
             - name: INVITATION_FROM_COMPANY_NUMBER  
               value: {{ .Values.invitationFromCompanyNumber | quote }}
             - name: INVITATION_PIN_SECRET
@@ -222,6 +244,14 @@ spec:
                 secretKeyRef:
                   name: {{ include "veritable-ui.invitationPinSecretName" . }}
                   key: {{ include "veritable-ui.invitationPinSecretKey" . }}
+            - name: INVITATION_PIN_ATTEMPT_LIMIT
+              value: {{ .Values.invitationPin.attemptLimit | quote }}
+            - name: ISSUANCE_DID_POLICY
+              value: {{ .Values.didPolicy | quote }}
+            - name: ISSUANCE_SCHEMA_POLICY
+              value: {{ .Values.schemaPolicy | quote }}
+            - name: ISSUANCE_CRED_DEF_POLICY
+              value: {{ .Values.credentialPolicy | quote }}
             {{- if .Values.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

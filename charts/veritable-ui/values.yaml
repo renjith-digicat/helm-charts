@@ -113,19 +113,42 @@ emailTransport: "STREAM"
 emailFromAddress: "hello@veritable.com"
 ## @param emailAdminAddress veritable-ui email admin address
 emailAdminAddress: "admin@veritable.com"
-## @param cloudagentAdminOrigin veritable-ui cloudagent admin origin URL
-cloudagentAdminOrigin: "http://localhost:3080"
 ## @param invitationFromCompanyNumber Companies House number to claim created invitations are from
 invitationFromCompanyNumber: "00000000"
+## @param didPolicy veritable-ui DID policy
+didPolicy: "FIND_EXISTING"
+## @param schemaPolicy veritable-ui schema policy
+schemaPolicy: "FIND_EXISTING"
+## @param credentialPolicy veritable-ui credential policy
+credentialPolicy: "FIND_EXISTING"
 ## @param invitationPin.enabled Enable Invitation pin secret
 ## @param invitationPin.secret the secret value
 ## @param invitationPin.existingSecret If there is an existing secret for the invitationPin
 ## @param invitationPin.existingSecretKey the key to use within the existing secret
+## @param invitationPin.attemptLimit the number of attempts to enter the pin
 invitationPin:
   enabled: true
   secret: ""
   existingSecret: ""
   existingSecretKey: ""
+  attemptLimit: 3
+
+## @section veritable-ui Issuance Policy Parameters
+##
+## @param initIssuancePolicy.enabled Enable issueance policy
+## @param initIssuancePolicy.logLevel veritable-ui issueance policy logging level
+## @param initIssuancePolicy.didPolicy veritable-ui issueance DID policy
+## @param initIssuancePolicy.schemaPolicy veritable-ui issueance schema policy
+## @param initIssuancePolicy.credentialPolicy veritable-ui issueance credential definition policy
+## @param initIssuancePolicy.args veritable-ui issueance policy arguments
+##
+initIssuancePolicy:
+  enabled: true
+  logLevel: "debug"
+  didPolicy: "EXISTING_OR_NEW"
+  schemaPolicy: "EXISTING_OR_NEW"
+  credentialPolicy: "EXISTING_OR_NEW"
+  args: []
 ## @section veritable-ui deployment parameters
 ## Digital Catapult veritable-ui image
 ## ref: https://hub.docker.com/r/digicatapult/veritable-ui/tags/
@@ -140,7 +163,7 @@ invitationPin:
 image:
   registry: docker.io
   repository: digicatapult/veritable-ui
-  tag: v0.4.0
+  tag: v0.8.13
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -604,11 +627,11 @@ initDbCreate:
     ##
     pullSecrets: []
 
-## @param initDbMigrate.enable Run database migration in an init container
+## @param initDbMigrate.enabled Run database migration in an init container
 ## @param initDbMigrate.environment Database configuration environment to run database into
 ## @param initDbMigrate.args Argument to pass to knex to migrate the database
 initDbMigrate:
-  enable: true
+  enabled: true
   environment: production
   args:
     - "migrate:latest"
@@ -635,6 +658,7 @@ serviceAccount:
 ## PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/main/bitnami/postgresql/values.yaml
 ## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
+## @param postgresql.nameOverride Name for the PostgreSQL dependency
 ## @param postgresql.auth.username Name for a custom user to create
 ## @param postgresql.auth.password Password for the custom user to create
 ## @param postgresql.auth.database Name for a custom database to create
@@ -643,6 +667,7 @@ serviceAccount:
 ##
 postgresql:
   enabled: true
+  nameOverride: vui-postgresql
   auth:
     username: veritable-ui
     password: ""
@@ -675,3 +700,21 @@ externalDatabase:
   existingSecret: ""
   existingSecretPasswordKey: ""
   existingSecretPostgresPasswordKey: ""
+
+## @section Veritable-Cloudagent section
+##
+## @param cloudagent.enabled Enable veritable-cloudagent
+## @param cloudagent.postgresql.nameOverride Name for the veritable-cloudagent PostgreSQL dependency
+##
+cloudagent:
+  enabled: false
+  postgresql:
+    nameOverride: vca-postgresql
+
+
+## @section External vertiable-cloudagent section
+##
+externalCloudagent:
+  ## @param externalCloudagent.url External veritable-cloudagent URL
+  ##
+  url: ""

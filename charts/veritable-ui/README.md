@@ -96,12 +96,26 @@ The command removes all the Kubernetes components associated with the chart and 
 | `emailTransport`                        | The email transport method to use, current options only STREAM | `STREAM`                                                         |
 | `emailFromAddress`                      | veritable-ui email from address                                | `hello@veritable.com`                                            |
 | `emailAdminAddress`                     | veritable-ui email admin address                               | `admin@veritable.com`                                            |
-| `cloudagentAdminOrigin`                 | veritable-ui cloudagent admin origin URL                       | `http://localhost:3080`                                          |
 | `invitationFromCompanyNumber`           | Companies House number to claim created invitations are from   | `00000000`                                                       |
+| `didPolicy`                             | veritable-ui DID policy                                        | `FIND_EXISTING`                                                  |
+| `schemaPolicy`                          | veritable-ui schema policy                                     | `FIND_EXISTING`                                                  |
+| `credentialPolicy`                      | veritable-ui credential policy                                 | `FIND_EXISTING`                                                  |
 | `invitationPin.enabled`                 | Enable Invitation pin secret                                   | `true`                                                           |
 | `invitationPin.secret`                  | the secret value                                               | `""`                                                             |
 | `invitationPin.existingSecret`          | If there is an existing secret for the invitationPin           | `""`                                                             |
 | `invitationPin.existingSecretKey`       | the key to use within the existing secret                      | `""`                                                             |
+| `invitationPin.attemptLimit`            | the number of attempts to enter the pin                        | `3`                                                              |
+
+### veritable-ui Issuance Policy Parameters
+
+| Name                                  | Description                                         | Value             |
+| ------------------------------------- | --------------------------------------------------- | ----------------- |
+| `initIssuancePolicy.enabled`          | Enable issueance policy                             | `true`            |
+| `initIssuancePolicy.logLevel`         | veritable-ui issueance policy logging level         | `debug`           |
+| `initIssuancePolicy.didPolicy`        | veritable-ui issueance DID policy                   | `EXISTING_OR_NEW` |
+| `initIssuancePolicy.schemaPolicy`     | veritable-ui issueance schema policy                | `EXISTING_OR_NEW` |
+| `initIssuancePolicy.credentialPolicy` | veritable-ui issueance credential definition policy | `EXISTING_OR_NEW` |
+| `initIssuancePolicy.args`             | veritable-ui issueance policy arguments             | `[]`              |
 
 ### veritable-ui deployment parameters
 
@@ -109,7 +123,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
 | `image.registry`                                  | veritable-ui image registry                                                                                                                             | `docker.io`                 |
 | `image.repository`                                | veritable-ui image repository                                                                                                                           | `digicatapult/veritable-ui` |
-| `image.tag`                                       | veritable-ui image tag (immutable tags are recommended)                                                                                                 | `v0.4.0`                    |
+| `image.tag`                                       | veritable-ui image tag (immutable tags are recommended)                                                                                                 | `v0.8.13`                   |
 | `image.digest`                                    | veritable-ui image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended) | `""`                        |
 | `image.pullPolicy`                                | veritable-ui image pull policy                                                                                                                          | `IfNotPresent`              |
 | `image.pullSecrets`                               | veritable-ui image pull secrets                                                                                                                         | `[]`                        |
@@ -223,7 +237,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `initDbCreate.image.digest`                   | postgres image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag image tag (immutable tags are recommended) | `""`                 |
 | `initDbCreate.image.pullPolicy`               | postgres image pull policy                                                                                                                          | `IfNotPresent`       |
 | `initDbCreate.image.pullSecrets`              | postgres image pull secrets                                                                                                                         | `[]`                 |
-| `initDbMigrate.enable`                        | Run database migration in an init container                                                                                                         | `true`               |
+| `initDbMigrate.enabled`                       | Run database migration in an init container                                                                                                         | `true`               |
 | `initDbMigrate.environment`                   | Database configuration environment to run database into                                                                                             | `production`         |
 | `initDbMigrate.args`                          | Argument to pass to knex to migrate the database                                                                                                    | `["migrate:latest"]` |
 | `serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                                                | `true`               |
@@ -233,25 +247,39 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### Database Parameters
 
-| Name                                                 | Description                                                              | Value          |
-| ---------------------------------------------------- | ------------------------------------------------------------------------ | -------------- |
-| `postgresql.enabled`                                 | Switch to enable or disable the PostgreSQL helm chart                    | `true`         |
-| `postgresql.auth.username`                           | Name for a custom user to create                                         | `veritable-ui` |
-| `postgresql.auth.password`                           | Password for the custom user to create                                   | `""`           |
-| `postgresql.auth.database`                           | Name for a custom database to create                                     | `veritable-ui` |
-| `postgresql.auth.existingSecret`                     | Name of existing secret to use for PostgreSQL credentials                | `""`           |
-| `postgresql.architecture`                            | PostgreSQL architecture (`standalone` or `replication`)                  | `standalone`   |
-| `externalDatabase.host`                              | Database host                                                            | `""`           |
-| `externalDatabase.port`                              | Database port number                                                     | `5432`         |
-| `externalDatabase.user`                              | Non-root username for veritable-ui                                       | `veritable-ui` |
-| `externalDatabase.password`                          | Password for the non-root username for veritable-ui                      | `""`           |
-| `externalDatabase.database`                          | veritable-ui database name                                               | `veritable-ui` |
-| `externalDatabase.create`                            | Enable PostgreSQL user and database creation (when using an external db) | `true`         |
-| `externalDatabase.postgresqlPostgresUser`            | External Database admin username                                         | `postgres`     |
-| `externalDatabase.postgresqlPostgresPassword`        | External Database admin password                                         | `""`           |
-| `externalDatabase.existingSecret`                    | Name of an existing secret resource containing the database credentials  | `""`           |
-| `externalDatabase.existingSecretPasswordKey`         | Name of an existing secret key containing the non-root credentials       | `""`           |
-| `externalDatabase.existingSecretPostgresPasswordKey` | Name of an existing secret key containing the admin credentials          | `""`           |
+| Name                                                 | Description                                                              | Value            |
+| ---------------------------------------------------- | ------------------------------------------------------------------------ | ---------------- |
+| `postgresql.enabled`                                 | Switch to enable or disable the PostgreSQL helm chart                    | `true`           |
+| `postgresql.nameOverride`                            | Name for the PostgreSQL dependency                                       | `vui-postgresql` |
+| `postgresql.auth.username`                           | Name for a custom user to create                                         | `veritable-ui`   |
+| `postgresql.auth.password`                           | Password for the custom user to create                                   | `""`             |
+| `postgresql.auth.database`                           | Name for a custom database to create                                     | `veritable-ui`   |
+| `postgresql.auth.existingSecret`                     | Name of existing secret to use for PostgreSQL credentials                | `""`             |
+| `postgresql.architecture`                            | PostgreSQL architecture (`standalone` or `replication`)                  | `standalone`     |
+| `externalDatabase.host`                              | Database host                                                            | `""`             |
+| `externalDatabase.port`                              | Database port number                                                     | `5432`           |
+| `externalDatabase.user`                              | Non-root username for veritable-ui                                       | `veritable-ui`   |
+| `externalDatabase.password`                          | Password for the non-root username for veritable-ui                      | `""`             |
+| `externalDatabase.database`                          | veritable-ui database name                                               | `veritable-ui`   |
+| `externalDatabase.create`                            | Enable PostgreSQL user and database creation (when using an external db) | `true`           |
+| `externalDatabase.postgresqlPostgresUser`            | External Database admin username                                         | `postgres`       |
+| `externalDatabase.postgresqlPostgresPassword`        | External Database admin password                                         | `""`             |
+| `externalDatabase.existingSecret`                    | Name of an existing secret resource containing the database credentials  | `""`             |
+| `externalDatabase.existingSecretPasswordKey`         | Name of an existing secret key containing the non-root credentials       | `""`             |
+| `externalDatabase.existingSecretPostgresPasswordKey` | Name of an existing secret key containing the admin credentials          | `""`             |
+
+### Veritable-Cloudagent section
+
+| Name                                 | Description                                             | Value            |
+| ------------------------------------ | ------------------------------------------------------- | ---------------- |
+| `cloudagent.enabled`                 | Enable veritable-cloudagent                             | `false`          |
+| `cloudagent.postgresql.nameOverride` | Name for the veritable-cloudagent PostgreSQL dependency | `vca-postgresql` |
+
+### External vertiable-cloudagent section
+
+| Name                     | Description                       | Value |
+| ------------------------ | --------------------------------- | ----- |
+| `externalCloudagent.url` | External veritable-cloudagent URL | `""`  |
 
 ## Configuration and installation details
 

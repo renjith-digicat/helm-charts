@@ -246,6 +246,49 @@ Add environment variables to configure database values
 {{- end -}}
 
 {{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "veritable-ui.cloudagent.fullname" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "cloudagent" "chartValues" .Values.cloudagent "context" $) -}}
+{{- end -}}
+
+{{/*
+Return the veritable-cloudagent hostname
+*/}}
+{{- define "veritable-ui.cloudagentHost" -}}
+{{- ternary (printf "%s-admin" (include "veritable-ui.cloudagent.fullname" . )) .Values.externalCloudagent.host .Values.cloudagent.enabled -}}
+{{- end -}}
+
+
+{{/*
+return the veritable-cloudagent admin http uri
+*/}}
+{{- define "veritable-ui.cloudagentAdminHttpUri" -}}
+{{- $host := include "veritable-ui.cloudagentHost" . -}}
+{{- $port := include "veritable-ui.cloudagentPort" . | replace "\"" "" -}}
+{{- printf "http://%s:%s" $host $port -}}
+{{- end -}}
+
+{{/*
+return the veritable-cloudagent admin ws uri
+*/}}
+{{- define "veritable-ui.cloudagentAdminWsUri" -}}
+{{- $host := include "veritable-ui.cloudagentHost" . -}}
+{{- $port := include "veritable-ui.cloudagentPort" . | replace "\"" "" -}}
+{{- printf "ws://%s:%s" $host $port -}}
+{{- end -}}
+
+{{/*
+Return the veritable-cloudagent port
+*/}}
+{{- define "veritable-ui.cloudagentPort" -}}
+{{- ternary "3000" .Values.externalCloudagent.port .Values.cloudagent.enabled | quote -}}
+{{- end -}}
+
+
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "veritable-ui.validateValues" -}}
@@ -254,6 +297,8 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "veritable-ui.validateValues.databaseUser" .) -}}
 {{- $messages := append $messages (include "veritable-ui.validateSecretKeys" .) -}}
 {{- $messages := append $messages (include "veritable-ui.validateSecretValues" .) -}}
+{{- $messages := append $messages (include "veritable-ui.validateCloudagentHost" . ) -}}
+{{- $messages := append $messages (include "veritable-ui.validateCloudagentPort" . ) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
@@ -283,6 +328,8 @@ veritable-ui:
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+
 
 {{/* Validate if secret keys are being set or if a pre-existing secret is being used*/}}
 {{- define "veritable-ui.validateSecretKeys" -}}
@@ -325,5 +372,25 @@ veritable-ui:
 veritable-ui:
     If a secret is not being used for the company house api key, a value must be provided
 {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate if either the cloudagent has been enabled or if an externalCloudagent.host has been set
+*/}}
+{{- define "veritable-ui.validateCloudagentHost" -}}
+{{- if not (or .Values.cloudagent.enabled .Values.externalCloudagent.host) -}}
+veritable-ui:
+    Either cloudagent.enabled must be true or externalCloudagent.host must be set.
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate if either the cloudagent has been enabled or if an externalCloudagent.port has been set
+*/}}
+{{- define "veritable-ui.validateCloudagentPort" -}}
+{{- if not (or .Values.cloudagent.enabled .Values.externalCloudagent.port) -}}
+veritable-ui:
+    Either cloudagent.enabled must be true or externalCloudagent.port must be set.
 {{- end -}}
 {{- end -}}

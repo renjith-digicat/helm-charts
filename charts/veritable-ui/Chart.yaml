@@ -2,7 +2,7 @@ annotations:
   category: veritable
   licenses: Apache-2.0
 apiVersion: v2
-appVersion: v0.4.0
+appVersion: v0.8.13
 dependencies:
   - condition: postgresql.enabled
     name: postgresql
@@ -13,6 +13,11 @@ dependencies:
     tags:
       - bitnami-common
     version: 2.x.x
+  - name: veritable-cloudagent
+    condition: cloudagent.enabled
+    repository: https://digicatapult.github.io/helm-charts
+    version: 1.0.6
+    alias: cloudagent
 description: The veritable user interface for managing connections
 home: https://github.com/digicatapult/veritable-ui
 keywords:
@@ -24,4 +29,4 @@ maintainers:
 name: veritable-ui
 sources:
   - https://github.com/digicatapult/veritable-ui
-version: 1.0.3
+version: 1.0.4
