@@ -11,3 +11,4 @@ A collection of [helm](https://helm.sh) charts created by [Digital Catapult](htt
 * [sqnc-node](charts/sqnc-node/README.md) - Deploy sqnc-node
 * [veritable-cloudagent](charts/veritable-cloudagent/README.md) - Deploy the veritable-cloudagent
 * [veritable-ui](charts/veritable-ui/README.md) - Deploy the veritable-ui
+* [bridgeai-prediction-service](charts/bridgeai-prediction-service/README.md) - Deploy bridgeai regression model prediction service
